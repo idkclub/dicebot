@@ -12,7 +12,7 @@ func init() {
 	Register("roll", roll)
 }
 
-var dice = regexp.MustCompile(`(\d{1,3})d(\d{1,4})`)
+var dice = regexp.MustCompile(`(\d{1,3})d(\d{1,4})([+-]\d{1,4})?`)
 
 func roll(args Args) D {
 	rand.Seed(time.Now().UnixNano())
@@ -22,6 +22,10 @@ func roll(args Args) D {
 	if len(m) > 2 {
 		num, _ = strconv.Atoi(m[1])
 		sides, _ = strconv.Atoi(m[2])
+	}
+	add := 0
+	if len(m) > 3 {
+		add, _ = strconv.Atoi(m[3])
 	}
 	if num > 100 {
 		num = 100
@@ -48,7 +52,7 @@ func roll(args Args) D {
 	} else {
 		color = "danger"
 	}
-
+	total += add
 	return D{
 		"response_type": "in_channel",
 		"attachments": []D{
