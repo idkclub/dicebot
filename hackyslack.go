@@ -27,6 +27,7 @@ var (
 func init() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/oauth", oauth)
+	http.HandleFunc("/privacy", privacy)
 }
 
 type D map[string]interface{}
@@ -96,4 +97,8 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 		Value: "1",
 	})
 	http.Redirect(w, r, "/", 303)
+}
+
+func privacy(w http.ResponseWriter, r *http.Request) {
+	templates.ExecuteTemplate(w, "privacy.html", true)
 }

@@ -1,0 +1,5 @@
+body {font:16px monospace; text-align:center;}
+hr {max-width: 250px;}
+img {display:block; margin:10px auto;}
+p {margin:0 auto 20px; max-width:400px;}
+.small {font-size:14px;}
