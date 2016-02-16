@@ -1,5 +1,9 @@
 body {font:16px monospace; text-align:center;}
 hr {max-width: 250px;}
 img {display:block; margin:10px auto;}
-p {margin:0 auto 20px; max-width:400px;}
+div, p {margin:0 auto 20px; max-width:400px;}
+.bold {font-weight: bold;}
+.command {text-align: left;}
+.grey {color: #aaa;}
+.right {float:right; font-style:italic;}
 .small {font-size:14px;}

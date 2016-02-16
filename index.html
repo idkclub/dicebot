@@ -10,11 +10,23 @@
     {{end}}
     <a href="https://slack.com/oauth/authorize?scope=commands&amp;client_id=12672102247.14593419078"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
     <p>
-    Click the button above to add Dicebot to your team's Slack to allow team
-    members to roll dice using
+    Clicking the button above will add the following command to your team's Slack:
+    </p>
+    <div class="command">
+      <span class="bold">/roll</span>
+      <span class="grey">[XdY]</span>
+      <span class="grey right">Roll X Y-sided dice</span>
+    </div>
+    <p>
+    which will allow members to roll dice using
     <a href="https://en.wikipedia.org/wiki/Dice_notation#Standard_notation">Standard Notation</a>.
+    </p>
+    <p>
+    For example, <span class="bold">/roll 2d6</span> will simulate rolling 2
+    6-sided dice, and return the sum via an in-channel post by Dicebot.
     </p>
     <a href="https://github.com/arkie/hackyslack2" class="small">Github</a>
     <a href="/privacy" class="small">Privacy Policy</a>
+    <a href="/contact" class="small">Contact</a>
   </body>
 </html>
