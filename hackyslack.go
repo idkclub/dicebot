@@ -2,12 +2,11 @@ package hackyslack
 
 import (
 	"encoding/json"
-	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
 	"html/template"
-	"log"
 	"net/http"
 )
 
@@ -47,7 +46,7 @@ type Command func(Args) D
 
 func Register(name string, cmd Command) {
 	http.HandleFunc("/"+name, func(w http.ResponseWriter, r *http.Request) {
-		writeJson(w, cmd(Args{
+		writeJson(w, r, cmd(Args{
 			TeamId:      r.FormValue("team_id"),
 			TeamDomain:  r.FormValue("team_domain"),
 			ChannelId:   r.FormValue("channel_id"),
@@ -61,10 +60,11 @@ func Register(name string, cmd Command) {
 	})
 }
 
-func writeJson(w http.ResponseWriter, data D) {
+func writeJson(w http.ResponseWriter, r *http.Request, data D) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
-		log.Fatal(err)
+		c := appengine.NewContext(r)
+		log.Errorf(c, "Failed to mashal %v: %v", data, err)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)
@@ -85,14 +85,14 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", 303)
 		return
 	}
-	var ctx context.Context = appengine.NewContext(r)
-	tok, err := conf.Exchange(ctx, code[0])
+	c := appengine.NewContext(r)
+	tok, err := conf.Exchange(c, code[0])
 	if err != nil {
-		log.Fatal(err)
+		log.Errorf(c, "Failed to exchange token %v: %v", tok, err)
 	}
-	log.Print(w, "%s", tok)
-	key := datastore.NewKey(ctx, "token", tok.Extra("team_id").(string), 0, nil)
-	datastore.Put(ctx, key, tok)
+	log.Infof(c, "Got token %v", tok)
+	key := datastore.NewKey(c, "token", tok.Extra("team_id").(string), 0, nil)
+	datastore.Put(c, key, tok)
 	http.SetCookie(w, &http.Cookie{
 		Name:  "s",
 		Value: "1",
