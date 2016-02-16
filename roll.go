@@ -60,9 +60,9 @@ func roll(args Args) D {
 	single := num * sides / 3.0
 	rollText := fmt.Sprint(rolls)
 	var color string
-	if total > single * 2 {
+	if total > single*2 {
 		color = "good"
-	} else if total > single + num - 1 {
+	} else if total > single+num-1 {
 		color = "warning"
 	} else {
 		color = "danger"
