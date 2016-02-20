@@ -8,6 +8,7 @@ import (
 	"google.golang.org/appengine/log"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 var (
@@ -44,9 +45,21 @@ type Args struct {
 }
 type Command func(Args) D
 
+// Manually inline oauth2.Token for datastore.
+type TeamToken struct {
+	AccessToken  string    `json:"access_token"`
+	TokenType    string    `json:"token_type,omitempty"`
+	RefreshToken string    `json:"refresh_token,omitempty"`
+	Expiry       time.Time `json:"expiry,omitempty"`
+	TeamId       string    `json:"team_id,omitempty"`
+	TeamName     string    `json:"team_name,omitempty"`
+	Scope        string    `json:"scope,omitempty"`
+	Created      time.Time `json:"created,omitempty"`
+}
+
 func Register(name string, cmd Command) {
 	http.HandleFunc("/"+name, func(w http.ResponseWriter, r *http.Request) {
-		writeJson(w, r, cmd(Args{
+		args := Args{
 			TeamId:      r.FormValue("team_id"),
 			TeamDomain:  r.FormValue("team_domain"),
 			ChannelId:   r.FormValue("channel_id"),
@@ -56,7 +69,10 @@ func Register(name string, cmd Command) {
 			Command:     r.FormValue("command"),
 			Text:        r.FormValue("text"),
 			ResponseUrl: r.FormValue("response_url"),
-		}))
+		}
+		c := appengine.NewContext(r)
+		log.Infof(c, "Got command %v", args)
+		writeJson(w, r, cmd(args))
 	})
 }
 
@@ -90,9 +106,18 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Errorf(c, "Failed to exchange token %v: %v", tok, err)
 	}
-	log.Infof(c, "Got token %v", tok)
-	key := datastore.NewKey(c, "token", tok.Extra("team_id").(string), 0, nil)
-	datastore.Put(c, key, tok)
+	team := TeamToken{
+		AccessToken:  tok.AccessToken,
+		TokenType:    tok.TokenType,
+		RefreshToken: tok.RefreshToken,
+		Expiry:       tok.Expiry,
+		TeamId:       tok.Extra("team_id").(string),
+		TeamName:     tok.Extra("team_name").(string),
+		Scope:        tok.Extra("scope").(string),
+		Created:      time.Now(),
+	}
+	key := datastore.NewKey(c, "token", team.TeamId, 0, nil)
+	datastore.Put(c, key, &team)
 	http.SetCookie(w, &http.Cookie{
 		Name:  "s",
 		Value: "1",
