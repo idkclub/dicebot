@@ -61,22 +61,6 @@ type TeamToken struct {
 
 func Register(name string, cmd Command) {
 	commands["/"+name] = cmd
-	http.HandleFunc("/"+name, func(w http.ResponseWriter, r *http.Request) {
-		args := Args{
-			TeamId:      r.FormValue("team_id"),
-			TeamDomain:  r.FormValue("team_domain"),
-			ChannelId:   r.FormValue("channel_id"),
-			ChannelName: r.FormValue("channel_name"),
-			UserId:      r.FormValue("user_id"),
-			UserName:    r.FormValue("user_name"),
-			Command:     r.FormValue("command"),
-			Text:        r.FormValue("text"),
-			ResponseUrl: r.FormValue("response_url"),
-		}
-		c := appengine.NewContext(r)
-		log.Infof(c, "Got command %v", args)
-		writeJson(w, r, cmd(args))
-	})
 }
 
 func writeJson(w http.ResponseWriter, r *http.Request, data D) {
