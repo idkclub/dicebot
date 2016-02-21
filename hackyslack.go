@@ -13,6 +13,7 @@ import (
 
 var (
 	templates = template.Must(template.ParseGlob("*.html"))
+	commands  = map[string]Command{}
 	conf      = oauth2.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
@@ -26,9 +27,10 @@ var (
 
 func init() {
 	http.HandleFunc("/", index)
+	http.HandleFunc("/command", command)
+	http.HandleFunc("/contact", contact)
 	http.HandleFunc("/oauth", oauth)
 	http.HandleFunc("/privacy", privacy)
-	http.HandleFunc("/contact", contact)
 }
 
 type D map[string]interface{}
@@ -58,6 +60,7 @@ type TeamToken struct {
 }
 
 func Register(name string, cmd Command) {
+	commands["/"+name] = cmd
 	http.HandleFunc("/"+name, func(w http.ResponseWriter, r *http.Request) {
 		args := Args{
 			TeamId:      r.FormValue("team_id"),
@@ -84,6 +87,28 @@ func writeJson(w http.ResponseWriter, r *http.Request, data D) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)
+}
+
+func command(w http.ResponseWriter, r *http.Request) {
+	args := Args{
+		TeamId:      r.FormValue("team_id"),
+		TeamDomain:  r.FormValue("team_domain"),
+		ChannelId:   r.FormValue("channel_id"),
+		ChannelName: r.FormValue("channel_name"),
+		UserId:      r.FormValue("user_id"),
+		UserName:    r.FormValue("user_name"),
+		Command:     r.FormValue("command"),
+		Text:        r.FormValue("text"),
+		ResponseUrl: r.FormValue("response_url"),
+	}
+	c := appengine.NewContext(r)
+	log.Infof(c, "Got command %v", args)
+	cmd, ok := commands[args.Command]
+	if ok {
+		writeJson(w, r, cmd(args))
+	} else {
+		w.Write([]byte("Command not found."))
+	}
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -125,10 +150,10 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 303)
 }
 
-func privacy(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "privacy.html", true)
-}
-
 func contact(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "contact.html", true)
+}
+
+func privacy(w http.ResponseWriter, r *http.Request) {
+	templates.ExecuteTemplate(w, "privacy.html", true)
 }
