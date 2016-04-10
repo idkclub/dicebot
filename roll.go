@@ -74,7 +74,7 @@ func parseRoll(text string) []*DiceRoll {
 				}
 				if m[i][0] == '>' {
 					dice.Minimum, _ = strconv.Atoi(m[i][1:])
-					if dice.Minimum > dice.Sides {
+					if dice.Minimum >= dice.Sides {
 						dice.Minimum = dice.Sides - 1
 					}
 				} else {
