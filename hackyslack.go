@@ -101,7 +101,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 		Name:   "s",
 		MaxAge: -1,
 	})
-	templates.ExecuteTemplate(w, "index.html", c != nil)
+	if c != nil {
+		templates.ExecuteTemplate(w, "index.html", c.Value)
+	} else {
+		templates.ExecuteTemplate(w, "index.html", "")
+	}
 }
 
 func oauth(w http.ResponseWriter, r *http.Request) {
@@ -114,6 +118,12 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 	tok, err := conf.Exchange(c, code[0])
 	if err != nil {
 		log.Errorf(c, "Failed to exchange token %v: %v", tok, err)
+		http.SetCookie(w, &http.Cookie{
+			Name:  "s",
+			Value: "An error occured",
+		})
+		http.Redirect(w, r, "/", 303)
+		return
 	}
 	team := TeamToken{
 		AccessToken:  tok.AccessToken,
@@ -129,7 +139,7 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 	datastore.Put(c, key, &team)
 	http.SetCookie(w, &http.Cookie{
 		Name:  "s",
-		Value: "1",
+		Value: "Installed Dicebot",
 	})
 	http.Redirect(w, r, "/", 303)
 }
