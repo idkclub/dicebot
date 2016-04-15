@@ -1,13 +1,12 @@
-hackyslack2
------------
+dicebot
+-------
 
-An appengine-powered Slack service.
+An appengine-powered dice rolling Slack service.
 
-Currently supports:
+Currently installs:
 - /roll - Roll X Y-sided dice
 
 Currently powers:
-- [Hacky Slack](https://hacky-slack.appspot.com) - all commands
 - [Dicebot](https://dice-b.appspot.com) - /roll
 
 To launch your own copy:
