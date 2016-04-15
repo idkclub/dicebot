@@ -1,7 +1,7 @@
 dicebot
 -------
 
-![Preview of roll command](/preview.png)
+![Preview of roll command](/preview@2x.png)
 
 An appengine-powered dice rolling Slack service.
 
