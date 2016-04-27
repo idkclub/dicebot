@@ -6,17 +6,21 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
-	"html/template"
 	"net/http"
 	"time"
 )
 
+const (
+	Cookie = "c"
+	Okay   = "Okay"
+	Error  = "Error"
+)
+
 var (
-	templates = template.Must(template.ParseGlob("*.html"))
 	commands  = map[string]Command{}
 	conf      = oauth2.Config{
-		ClientID:     clientId,
-		ClientSecret: clientSecret,
+		ClientID:     "",
+		ClientSecret: "",
 		Scopes:       []string{},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://slack.com/oauth/authorize",
@@ -24,14 +28,6 @@ var (
 		},
 	}
 )
-
-func init() {
-	http.HandleFunc("/", index)
-	http.HandleFunc("/command", command)
-	http.HandleFunc("/contact", contact)
-	http.HandleFunc("/oauth", oauth)
-	http.HandleFunc("/privacy", privacy)
-}
 
 type D map[string]interface{}
 type Args struct {
@@ -59,6 +55,11 @@ type TeamToken struct {
 	Created      time.Time `json:"created,omitempty"`
 }
 
+func Configure(clientId string, clientSecret string) {
+	conf.ClientID = clientId
+	conf.ClientSecret = clientSecret
+}
+
 func Register(name string, cmd Command) {
 	commands["/"+name] = cmd
 }
@@ -73,7 +74,7 @@ func writeJson(w http.ResponseWriter, r *http.Request, data D) {
 	w.Write(bytes)
 }
 
-func command(w http.ResponseWriter, r *http.Request) {
+func Route(w http.ResponseWriter, r *http.Request) {
 	args := Args{
 		TeamId:      r.FormValue("team_id"),
 		TeamDomain:  r.FormValue("team_domain"),
@@ -95,20 +96,7 @@ func command(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
-	c, _ := r.Cookie("s")
-	http.SetCookie(w, &http.Cookie{
-		Name:   "s",
-		MaxAge: -1,
-	})
-	if c != nil {
-		templates.ExecuteTemplate(w, "index.html", c.Value)
-	} else {
-		templates.ExecuteTemplate(w, "index.html", "")
-	}
-}
-
-func oauth(w http.ResponseWriter, r *http.Request) {
+func Oauth(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query()["code"]
 	if len(code) == 0 {
 		http.Redirect(w, r, "/", 303)
@@ -119,8 +107,8 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Errorf(c, "Failed to exchange token %v: %v", tok, err)
 		http.SetCookie(w, &http.Cookie{
-			Name:  "s",
-			Value: "An error occured",
+			Name:  Cookie,
+			Value: Error,
 		})
 		http.Redirect(w, r, "/", 303)
 		return
@@ -138,16 +126,8 @@ func oauth(w http.ResponseWriter, r *http.Request) {
 	key := datastore.NewKey(c, "token", team.TeamId, 0, nil)
 	datastore.Put(c, key, &team)
 	http.SetCookie(w, &http.Cookie{
-		Name:  "s",
-		Value: "Installed Dicebot",
+		Name:  Cookie,
+		Value: Okay,
 	})
 	http.Redirect(w, r, "/", 303)
-}
-
-func contact(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "contact.html", true)
-}
-
-func privacy(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "privacy.html", true)
 }

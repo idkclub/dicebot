@@ -4,7 +4,7 @@ read -p "Client ID: " id
 read -p "Client Secret: " secret
 
 cat > secrets.go <<EOL
-package hackyslack
+package ${PWD##*/}
 
 const (
 	clientId     = "${id}"

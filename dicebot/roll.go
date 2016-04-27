@@ -1,125 +1,23 @@
-package hackyslack
+package dicebot
 
 import (
 	"fmt"
+	"github.com/arkie/hackyslack2"
+	"github.com/arkie/hackyslack2/roll"
 	"math/rand"
-	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var diceRegEx = regexp.MustCompile(`(?P<num>\d{0,3})d(?P<sides>%|\d{0,4})(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,4})?(?P<mod>[+-]\d{1,4})?`)
-
-type DiceRoll struct {
-	Number   int
-	Sides    int
-	Modifier int
-	Minimum  int
-	Maximum  int
-	Keep     int
-	Rolls    []int
-	Removed  []int
-	Total    int
-}
-
 func init() {
-	Register("roll", roll)
+	hackyslack.Register("roll", command)
 }
 
-func parseRoll(text string) []*DiceRoll {
-	var rolls []*DiceRoll
-	for _, m := range diceRegEx.FindAllStringSubmatch(text, 5) {
-		dice := &DiceRoll{
-			Number: 2,
-			Sides:  6,
-		}
-		for i, name := range diceRegEx.SubexpNames() {
-			switch name {
-			case "num":
-				num, _ := strconv.Atoi(m[i])
-				if num < 1 {
-					num = 1
-				}
-				if num > 100 {
-					num = 100
-				}
-				dice.Number = num
-			case "sides":
-				if m[i] == "" {
-					dice.Sides = 6
-				} else if m[i] == "%" {
-					dice.Sides = 100
-				} else {
-					dice.Sides, _ = strconv.Atoi(m[i])
-					if dice.Sides < 1 {
-						dice.Sides = 1
-					}
-					if dice.Sides > 1000 {
-						dice.Sides = 1000
-					}
-				}
-			case "keep":
-				if m[i] == "" {
-					break
-				}
-				dice.Keep, _ = strconv.Atoi(m[i][1:])
-				if dice.Keep > dice.Number {
-					dice.Keep = dice.Number
-				}
-			case "max":
-				if m[i] == "" {
-					break
-				}
-				if m[i][0] == '>' {
-					dice.Minimum, _ = strconv.Atoi(m[i][1:])
-					if dice.Minimum >= dice.Sides {
-						dice.Minimum = dice.Sides - 1
-					}
-				} else {
-					dice.Maximum, _ = strconv.Atoi(m[i][1:])
-					if dice.Maximum < 2 {
-						dice.Maximum = 2
-					}
-				}
-			case "mod":
-				dice.Modifier, _ = strconv.Atoi(m[i])
-			}
-		}
-		rolls = append(rolls, dice)
-	}
-	if len(rolls) == 0 {
-		rolls = append(rolls, &DiceRoll{
-			Number: 2,
-			Sides:  6,
-		})
-	}
-	return rolls
-}
-
-func (r *DiceRoll) Roll() {
-	r.Total = 0
-	for i := 0; i < r.Number; i++ {
-		n := rand.Intn(r.Sides) + 1
-		r.Total += n
-		r.Rolls = append(r.Rolls, n)
-	}
-	if r.Keep != 0 {
-		sort.Ints(r.Rolls)
-		r.Removed = r.Rolls[:len(r.Rolls)-r.Keep]
-		r.Rolls = r.Rolls[len(r.Rolls)-r.Keep:]
-		r.Total = 0
-		for _, n := range r.Rolls {
-			r.Total += n
-		}
-	}
-}
-
-func formatRoll(name string, results []*DiceRoll) D {
+func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 	var (
 		color  string
-		fields []D
+		fields []hackyslack.D
 		totals []string
 		final  int
 	)
@@ -133,21 +31,21 @@ func formatRoll(name string, results []*DiceRoll) D {
 		} else {
 			color = "danger"
 		}
-		fields = append(fields, D{
+		fields = append(fields, hackyslack.D{
 			"title": "Dice",
 			"value": fmt.Sprint(result.Number, "d", result.Sides),
 			"short": true,
-		}, D{
+		}, hackyslack.D{
 			"title": "Rolls",
 			"value": rollText[1 : len(rollText)-1],
 			"short": true,
 		})
 		if result.Modifier != 0 {
-			fields = append(fields, D{
+			fields = append(fields, hackyslack.D{
 				"title": "Raw",
 				"value": strconv.Itoa(result.Total),
 				"short": true,
-			}, D{
+			}, hackyslack.D{
 				"title": "Modifier",
 				"value": strconv.Itoa(result.Modifier),
 				"short": true,
@@ -160,11 +58,11 @@ func formatRoll(name string, results []*DiceRoll) D {
 					count++
 				}
 			}
-			fields = append(fields, D{
+			fields = append(fields, hackyslack.D{
 				"title": "Minimum",
 				"value": strconv.Itoa(result.Minimum),
 				"short": true,
-			}, D{
+			}, hackyslack.D{
 				"title": "Over",
 				"value": strconv.Itoa(count),
 				"short": true,
@@ -177,11 +75,11 @@ func formatRoll(name string, results []*DiceRoll) D {
 					count++
 				}
 			}
-			fields = append(fields, D{
+			fields = append(fields, hackyslack.D{
 				"title": "Maximum",
 				"value": strconv.Itoa(result.Maximum),
 				"short": true,
-			}, D{
+			}, hackyslack.D{
 				"title": "Under",
 				"value": strconv.Itoa(count),
 				"short": true,
@@ -189,11 +87,11 @@ func formatRoll(name string, results []*DiceRoll) D {
 		}
 		if result.Keep != 0 {
 			removed := fmt.Sprint(result.Removed)
-			fields = append(fields, D{
+			fields = append(fields, hackyslack.D{
 				"title": "Keep",
 				"value": strconv.Itoa(result.Keep),
 				"short": true,
-			}, D{
+			}, hackyslack.D{
 				"title": "Removed",
 				"value": removed[1 : len(removed)-1],
 				"short": true,
@@ -211,10 +109,10 @@ func formatRoll(name string, results []*DiceRoll) D {
 		text = fmt.Sprint("*", strconv.Itoa(final), "*")
 		fallback = strconv.Itoa(final)
 	}
-	return D{
+	return hackyslack.D{
 		"response_type": "in_channel",
-		"attachments": []D{
-			D{
+		"attachments": []hackyslack.D{
+			hackyslack.D{
 				"fallback":  fmt.Sprint("@", name, " rolled ", fallback),
 				"text":      fmt.Sprint("@", name, " rolled ", text),
 				// TODO: Color just uses the last color chosen.
@@ -226,9 +124,9 @@ func formatRoll(name string, results []*DiceRoll) D {
 	}
 }
 
-func roll(args Args) D {
+func command(args hackyslack.Args) hackyslack.D {
 	rand.Seed(time.Now().UnixNano())
-	result := parseRoll(args.Text)
+	result := roll.Parse(args.Text)
 	for _, roll := range result {
 		roll.Roll()
 	}
