@@ -1,15 +1,23 @@
 hackyslack2
 -----------
 
-An appengine-powered Slack service.
-
-Currently supports:
-- /roll - Roll X Y-sided dice
+A framework for appengine-powered Slack apps.
 
 Currently powers:
-- [Hacky Slack](https://hacky-slack.appspot.com) - all commands
-- [Dicebot](https://dice-b.appspot.com) - /roll
+- [Dicebot](https://dice-b.appspot.com) - Simple app to add a /roll command.
 
-To launch your own copy:
-- Clone this repo.
-- Run [./secret.sh](/secret.sh) to create secrets.go.
+To use in your own apps:
+- View the included [dicebot](/dicebot) sample app.
+- Import the repository.
+  
+  ```import "github.com/arkie/hackyslack2"```
+
+- Configure with the application id and secret from [Slack](https://api.slack.com/applications) ([dicebot/index.go](/dicebot/index.go#L14))
+
+  ```hackyslack.Configure(clientId, clientSecret)```
+
+- Register a command to run when the application is called. ([dicebot/roll.go](/dicebot/roll.go#L14))
+
+  ```hackyslack.Register("roll", command)```
+  
+- Deploy the new app with ```goapp deploy```
