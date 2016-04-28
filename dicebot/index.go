@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	templates = template.Must(template.ParseGlob("*.html"))
+	templates = template.Must(template.ParseGlob("template/*.html"))
 )
 
 func init() {
