@@ -1,4 +1,4 @@
-hackyslack2
+hackyslack2 [![Build Status](https://circleci.com/gh/arkie/hackyslack2.svg?style=shield)](https://circleci.com/gh/arkie/hackyslack2)
 -----------
 
 A framework for appengine-powered Slack apps.
