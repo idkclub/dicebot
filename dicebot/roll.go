@@ -113,8 +113,8 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 		"response_type": "in_channel",
 		"attachments": []hackyslack.D{
 			hackyslack.D{
-				"fallback":  fmt.Sprint("@", name, " rolled ", fallback),
-				"text":      fmt.Sprint("@", name, " rolled ", text),
+				"fallback": fmt.Sprint("@", name, " rolled ", fallback),
+				"text":     fmt.Sprint("@", name, " rolled ", text),
 				// TODO: Color just uses the last color chosen.
 				"color":     color,
 				"fields":    fields,
