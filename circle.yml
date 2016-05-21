@@ -18,5 +18,4 @@ deployment:
   production:
     branch: master
     commands:
-    - cd dicebot
-    - gcloud -q preview app deploy app.yaml --version=$GCLOUD_VERSION
+    - 'cd dicebot && gcloud -q preview app deploy app.yaml --version=$GCLOUD_VERSION'
