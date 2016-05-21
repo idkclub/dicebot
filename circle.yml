@@ -9,12 +9,9 @@ dependencies:
   pre:
     # Retrieve Google Service Account from the CircleCI environment.
     - echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
-    - gcloud --quiet components update app
+    - sudo gcloud components update --version 0.9.83
     - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
     - gcloud config set project $GCLOUD_PROJECT
-    # Remove application and version to use gcloud config instead.
-    - sed -i /application/d dicebot/app.yaml 
-    - sed -i /version/d dicebot/app.yaml 
     - sed -i s/your_slack_id/$SLACK_ID/ dicebot/app.yaml
     - sed -i s/your_slack_secret/$SLACK_SECRET/ dicebot/app.yaml
 
