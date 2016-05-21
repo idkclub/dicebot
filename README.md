@@ -12,7 +12,7 @@ To use in your own apps:
   
   ```import "github.com/arkie/hackyslack2"```
 
-- Configure with the application id and secret from [Slack](https://api.slack.com/applications) ([dicebot/index.go](/dicebot/index.go#L14))
+- Configure with the application id and secret from [Slack](https://api.slack.com/applications) ([dicebot/index.go](/dicebot/index.go#L17))
 
   ```hackyslack.Configure(clientId, clientSecret)```
 
