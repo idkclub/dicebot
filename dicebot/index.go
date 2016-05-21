@@ -4,10 +4,13 @@ import (
 	"github.com/arkie/hackyslack2"
 	"html/template"
 	"net/http"
+	"os"
 )
 
 var (
-	templates = template.Must(template.ParseGlob("template/*.html"))
+	clientId     = os.Getenv("SLACK_ID")
+	clientSecret = os.Getenv("SLACK_SECRET")
+	templates    = template.Must(template.ParseGlob("template/*.html"))
 )
 
 func init() {
