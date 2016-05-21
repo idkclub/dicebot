@@ -11,11 +11,12 @@ dependencies:
     - echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
     - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
     - gcloud config set project $GCLOUD_PROJECT
-    - sed -i s/your_slack_id/$SLACK_ID/ app.yaml
-    - sed -i s/your_slack_secret/$SLACK_SECRET/ app.yaml
+    - sed -i s/your_slack_id/$SLACK_ID/ dicebot/app.yaml
+    - sed -i s/your_slack_secret/$SLACK_SECRET/ dicebot/app.yaml
 
 deployment:
   production:
     branch: master
     commands:
+    - cd dicebot
     - gcloud -q preview app deploy app.yaml --version=$GCLOUD_VERSION
