@@ -3,10 +3,6 @@ version: 2
 runtime: go
 api_version: go1
 
-env_variables:
-  SLACK_ID: your_slack_id
-  SLACK_SECRET: your_slack_secret
-
 handlers:
 - url: /static
   static_dir: static
