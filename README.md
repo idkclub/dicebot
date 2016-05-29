@@ -21,3 +21,4 @@ To use in your own apps:
   ```hackyslack.Register("roll", command)```
   
 - Deploy the new app with ```goapp deploy```
+  - Or use continuous deployment similar to dicebot's [circle.yml](/circle.yml) configuration, inspired by [yosukesuzuki/hugo-gae](https://github.com/yosukesuzuki/hugo-gae).
