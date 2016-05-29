@@ -1,0 +1,9 @@
+dependencies:
+  pre:
+    - curl 'https://www.googleapis.com/download/storage/v1/b/appengine-sdks/o/featured%2Fgo_appengine_sdk_linux_386-1.9.22.zip?generation=1432661246475000&alt=media' > google_appengine.zip
+    - unzip -q -d $HOME google_appengine.zip
+deployment:
+  appengine:
+    branch: circle
+    commands:
+      - $HOME/go_appengine/appcfg.py -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
