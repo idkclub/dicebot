@@ -1,0 +1,9 @@
+dependencies:
+  pre:
+    - python getlatestsdk.py
+    - unzip -q -d $HOME google_appengine.zip
+deployment:
+  appengine:
+    branch: circle
+    commands:
+      - $HOME/go_appengine/appcfg.py -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
