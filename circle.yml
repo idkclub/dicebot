@@ -4,6 +4,7 @@ dependencies:
     - unzip -q -d $HOME google_appengine.zip
 deployment:
   appengine:
-    branch: circle
+    branch: master
+    owner: arkie
     commands:
       - $HOME/go_appengine/appcfg.py -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
