@@ -1,6 +1,6 @@
 dependencies:
   pre:
-    - python getlatestsdk.py
+    - curl 'https://www.googleapis.com/download/storage/v1/b/appengine-sdks/o/featured%2Fgo_appengine_sdk_linux_386-1.9.22.zip?generation=1432661246475000&alt=media' > google_appengine.zip
     - unzip -q -d $HOME google_appengine.zip
 deployment:
   appengine:
