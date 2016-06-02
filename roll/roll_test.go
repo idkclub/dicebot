@@ -8,6 +8,7 @@ var ParseTests = []RollTest{
 	RollTest{"", []Dice{Dice{Number: 2, Sides: 6}}},
 	RollTest{"blah", []Dice{Dice{Number: 2, Sides: 6}}},
 	RollTest{"2", []Dice{Dice{Number: 2, Sides: 6}}},
+	RollTest{"0d0", []Dice{Dice{Number: 1, Sides: 1}}},
 	RollTest{"d", []Dice{Dice{Number: 1, Sides: 6}}},
 	RollTest{"d%", []Dice{Dice{Number: 1, Sides: 100}}},
 	RollTest{"0d1", []Dice{Dice{Number: 1, Sides: 1}}},
@@ -29,6 +30,8 @@ var ParseTests = []RollTest{
 	}},
 	RollTest{"2d6>5", []Dice{Dice{Number: 2, Sides: 6, Minimum: 5}}},
 	RollTest{"2d6<2", []Dice{Dice{Number: 2, Sides: 6, Maximum: 2}}},
+	RollTest{"2d6>6", []Dice{Dice{Number: 2, Sides: 6, Minimum: 5}}},
+	RollTest{"2d6<1", []Dice{Dice{Number: 2, Sides: 6, Maximum: 2}}},
 	RollTest{"6d6k5", []Dice{Dice{Number: 6, Sides: 6, Keep: 5}}},
 	RollTest{"2d6k5", []Dice{Dice{Number: 2, Sides: 6, Keep: 2}}},
 }
