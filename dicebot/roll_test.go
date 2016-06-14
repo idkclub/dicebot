@@ -3,7 +3,7 @@ package dicebot
 import (
 	"fmt"
 	"github.com/arkie/hackyslack2"
-	"github.com/arkie/hackyslack2/roll"
+	"github.com/arkie/hackyslack2/dicebot/roll"
 	"testing"
 )
 

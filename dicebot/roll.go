@@ -3,7 +3,7 @@ package dicebot
 import (
 	"fmt"
 	"github.com/arkie/hackyslack2"
-	"github.com/arkie/hackyslack2/roll"
+	"github.com/arkie/hackyslack2/dicebot/roll"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -112,7 +112,7 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 	return hackyslack.D{
 		"response_type": "in_channel",
 		"attachments": []hackyslack.D{
-			hackyslack.D{
+			{
 				"fallback": fmt.Sprint("@", name, " rolled ", fallback),
 				"text":     fmt.Sprint("@", name, " rolled ", text),
 				// TODO: Color just uses the last color chosen.

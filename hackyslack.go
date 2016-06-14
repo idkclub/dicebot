@@ -17,8 +17,8 @@ const (
 )
 
 var (
-	commands  = map[string]Command{}
-	conf      = oauth2.Config{
+	commands = map[string]Command{}
+	conf     = oauth2.Config{
 		ClientID:     "",
 		ClientSecret: "",
 		Scopes:       []string{},
