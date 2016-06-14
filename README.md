@@ -7,7 +7,7 @@ Currently powers:
 - [Dicebot](https://dice-b.appspot.com) - Simple app to add a /roll command.
 
 To use in your own apps:
-- View the included [dicebot](/dicebot) sample app which in turn uses the [hackyslack2/roll](/roll) dice parsing library.
+- View the included [dicebot](/dicebot) sample app which in turn uses the [hackyslack2/dicebot/roll](/dicebot/roll) dice parsing library.
 - Import the repository.
   
   ```import "github.com/arkie/hackyslack2"```
