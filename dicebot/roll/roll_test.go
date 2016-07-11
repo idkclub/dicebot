@@ -13,6 +13,7 @@ var ParseTests = []RollTest{
 	RollTest{"d%", []Dice{Dice{Number: 1, Sides: 100}}},
 	RollTest{"0d1", []Dice{Dice{Number: 1, Sides: 1}}},
 	RollTest{"1d20-1", []Dice{Dice{Number: 1, Sides: 20, Modifier: -1}}},
+	RollTest{"1D20-1", []Dice{Dice{Number: 1, Sides: 20, Modifier: -1}}},
 	RollTest{"2d20+12345", []Dice{Dice{Number: 2, Sides: 20, Modifier: 1234}}},
 	RollTest{"1234567890d123456790-1234567890", []Dice{Dice{Number: 100, Sides: 1000}}},
 	RollTest{"2d2+1 1d6", []Dice{
