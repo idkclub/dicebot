@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var regex = regexp.MustCompile(`(?i)(?P<num>\d{0,3})[dD](?P<sides>%|\d{0,4})(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,4})?(?P<mod>[+-]\d{1,4})?`)
+var regex = regexp.MustCompile(`(?i)(?P<num>\d{0,3})d(?P<sides>%|\d{0,4})(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,4})?(?P<mod>[+-]\d{1,4})?`)
 
 type Dice struct {
 	Number   int
