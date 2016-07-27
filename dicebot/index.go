@@ -24,6 +24,11 @@ func init() {
 	http.HandleFunc("/privacy", privacy)
 }
 
+type page struct {
+	Client string
+	Status string
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	c, _ := r.Cookie(hackyslack.Cookie)
 	http.SetCookie(w, &http.Cookie{
@@ -35,16 +40,19 @@ func index(w http.ResponseWriter, r *http.Request) {
 		if c.Value != hackyslack.Okay {
 			s = "Error Installing"
 		}
-		templates.ExecuteTemplate(w, "index.html", s)
+		templates.ExecuteTemplate(w, "index.html", page{
+			Client: clientId,
+			Status: s,
+		})
 	} else {
-		templates.ExecuteTemplate(w, "index.html", "")
+		templates.ExecuteTemplate(w, "index.html", page{Client: clientId})
 	}
 }
 
 func contact(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "contact.html", true)
+	templates.ExecuteTemplate(w, "contact.html", nil)
 }
 
 func privacy(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "privacy.html", true)
+	templates.ExecuteTemplate(w, "privacy.html", nil)
 }
