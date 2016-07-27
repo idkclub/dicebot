@@ -104,7 +104,7 @@ func Oauth(w http.ResponseWriter, r *http.Request) {
 	}
 	c := appengine.NewContext(r)
 	tok, err := conf.Exchange(c, code[0])
-	if err != nil {
+	if err != nil || !tok.Valid() {
 		log.Errorf(c, "Failed to exchange token %v: %v", tok, err)
 		http.SetCookie(w, &http.Cookie{
 			Name:  Cookie,
