@@ -1,4 +1,3 @@
-application: hacky-slack
 version: 2
 runtime: go
 api_version: go1
