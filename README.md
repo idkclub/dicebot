@@ -3,7 +3,7 @@ hackyslack2 [![Build Status](https://circleci.com/gh/arkie/hackyslack2.svg?style
 
 A framework for appengine-powered Slack apps.
 
-Currently powers:
+Currently used in:
 - [Dicebot](https://dice-b.appspot.com) - Simple app to add a /roll command.
 
 To use in your own apps:
