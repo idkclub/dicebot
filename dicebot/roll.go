@@ -61,18 +61,32 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 		if result.Sides == 1 {
 			continue
 		}
-		single := result.Number * result.Sides / 3.0
 		rollText := fmt.Sprint(result.Rolls)
-		if result.Total > single*2 {
-			color = "good"
-		} else if result.Total > single+result.Number-1 {
-			color = "warning"
+		if result.Fudge {
+			if result.Total > 0 {
+				color = "good"
+			} else if result.Total == 0 {
+				color = "warning"
+			} else {
+				color = "danger"
+			}
 		} else {
-			color = "danger"
+			single := result.Number * result.Sides / 3.0
+			if result.Total > single*2 {
+				color = "good"
+			} else if result.Total > single+result.Number-1 {
+				color = "warning"
+			} else {
+				color = "danger"
+			}
+		}
+		dice := fmt.Sprint(result.Number, "d", result.Sides)
+		if result.Fudge {
+			dice = fmt.Sprint(result.Number, "f")
 		}
 		fields = append(fields, hackyslack.D{
 			"title": "Dice",
-			"value": fmt.Sprint(result.Number, "d", result.Sides),
+			"value": dice,
 			"short": true,
 		}, hackyslack.D{
 			"title": "Rolls",

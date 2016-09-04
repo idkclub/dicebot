@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>%|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,3})?|(?P<const>\d{1,5}))`)
+var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>%|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,3})?|(?P<alt>\d{1,5})(?P<fudge>f)?)`)
 
 const (
 	Add      = "+"
@@ -28,6 +28,7 @@ type Dice struct {
 	Rolls    []int
 	Removed  []int
 	Explode  bool
+	Fudge    bool
 	Total    int
 }
 
@@ -48,13 +49,17 @@ func Parse(text string) []*Dice {
 					dice.Operator = m[i]
 				}
 			case "explode":
-				dice.Explode = m[i] == "!"
-			case "const":
+				dice.Explode = m[i] != ""
+			case "fudge":
+				if m[i] != "" {
+					dice.Fudge = true
+					dice.Sides = 3
+				}
+			case "alt":
 				if m[i] != "" {
 					num, _ := strconv.Atoi(m[i])
 					dice.Number = num
 					dice.Sides = 1
-					break
 				}
 			case "num":
 				num, _ := strconv.Atoi(m[i])
@@ -126,6 +131,9 @@ func (r *Dice) Roll() {
 	num := r.Number
 	for i := 0; i < num; i++ {
 		n := rand.Intn(r.Sides) + 1
+		if r.Fudge {
+			n -= 2
+		}
 		r.Total += n
 		r.Rolls = append(r.Rolls, n)
 		if r.Explode && n == r.Sides {
