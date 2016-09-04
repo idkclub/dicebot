@@ -82,7 +82,7 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 		}
 		dice := fmt.Sprint(result.Number, "d", result.Sides)
 		if result.Fudge {
-			dice = fmt.Sprint(result.Number, "f")
+			dice = fmt.Sprint(result.Number, "df")
 		}
 		fields = append(fields, hackyslack.D{
 			"title": "Dice",

@@ -16,6 +16,7 @@ var ParseTests = []RollTest{
 	{"0d1", []Dice{{Operator: Add, Number: 1, Sides: 1}}},
 	{"1d6!", []Dice{{Operator: Add, Number: 1, Sides: 6, Explode: true}}},
 	{"4f", []Dice{{Operator: Add, Number: 4, Sides: 3, Fudge: true}}},
+	{"4df", []Dice{{Operator: Add, Number: 4, Sides: 3, Fudge: true}}},
 	{"1d20-1", []Dice{
 		{Operator: Add, Number: 1, Sides: 20},
 		{Operator: Subtract, Number: 1, Sides: 1},
