@@ -7,12 +7,19 @@ import (
 	"strconv"
 )
 
-var regex = regexp.MustCompile(`(?i)(?P<num>\d{0,3})d(?P<sides>%|\d{0,4})(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,4})?(?P<mod>[+-]\d{1,4})?`)
+var regex = regexp.MustCompile(`(?i)(?P<op>[×*/+-])?\s*((?P<num>\d{0,3})d(?P<sides>%|\d{1,4})(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,3})?|(?P<const>\d{1,5}))`)
+
+const (
+	Add      = "+"
+	Subtract = "-"
+	Multiply = "*"
+	Divide   = "/"
+)
 
 type Dice struct {
+	Operator string
 	Number   int
 	Sides    int
-	Modifier int
 	Minimum  int
 	Maximum  int
 	Keep     int
@@ -25,11 +32,25 @@ func Parse(text string) []*Dice {
 	var rolls []*Dice
 	for _, m := range regex.FindAllStringSubmatch(text, 5) {
 		dice := &Dice{
-			Number: 2,
-			Sides:  6,
+			Operator: Add,
+			Number:   2,
+			Sides:    6,
 		}
 		for i, name := range regex.SubexpNames() {
 			switch name {
+			case "op":
+				if m[i] == "×" {
+					dice.Operator = "*"
+				} else if m[i] != "" {
+					dice.Operator = m[i]
+				}
+			case "const":
+				if m[i] != "" {
+					num, _ := strconv.Atoi(m[i])
+					dice.Number = num
+					dice.Sides = 1
+					break
+				}
 			case "num":
 				num, _ := strconv.Atoi(m[i])
 				if num < 1 {
@@ -76,16 +97,15 @@ func Parse(text string) []*Dice {
 						dice.Maximum = 2
 					}
 				}
-			case "mod":
-				dice.Modifier, _ = strconv.Atoi(m[i])
 			}
 		}
 		rolls = append(rolls, dice)
 	}
 	if len(rolls) == 0 {
 		rolls = append(rolls, &Dice{
-			Number: 2,
-			Sides:  6,
+			Operator: Add,
+			Number:   2,
+			Sides:    6,
 		})
 	}
 	return rolls
@@ -93,6 +113,10 @@ func Parse(text string) []*Dice {
 
 func (r *Dice) Roll() {
 	r.Total = 0
+	if r.Sides == 1 {
+		r.Total = r.Number
+		return
+	}
 	for i := 0; i < r.Number; i++ {
 		n := rand.Intn(r.Sides) + 1
 		r.Total += n

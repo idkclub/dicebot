@@ -16,6 +16,7 @@ var FormatTests = []string{
 	"10d10>5",
 	"10d10<5",
 	"10d10k5",
+	"2d6 / 2d6",
 }
 
 func TestRollFormat(t *testing.T) {
@@ -27,12 +28,21 @@ func TestRollFormat(t *testing.T) {
 		for i, result := range rolls {
 			result.Roll()
 			// Use the last roll as the final.
-			total := result.Total + result.Modifier
-			sum += total
+			total := result.Total
+			switch result.Operator {
+			case "+":
+				sum += result.Total
+			case "-":
+				sum -= result.Total
+			case "*":
+				sum *= result.Total
+			case "/":
+				sum /= result.Total
+			}
 			if i == 0 {
 				verify += fmt.Sprint("*", total, "*")
 			} else {
-				verify += fmt.Sprint(" + *", total, "*")
+				verify += fmt.Sprint(" ", result.Operator, " *", total, "*")
 			}
 		}
 		if len(rolls) > 1 {
@@ -47,7 +57,6 @@ func TestRollFormat(t *testing.T) {
 			t.Error("Missing color")
 		}
 		if attach["text"] != verify {
-			t.Log(rolls)
 			t.Error("Incorrect response text", attach["text"], "instead of", verify)
 		}
 	}

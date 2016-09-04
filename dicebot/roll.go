@@ -6,7 +6,6 @@ import (
 	"github.com/arkie/hackyslack2/dicebot/roll"
 	"math/rand"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -16,12 +15,44 @@ func init() {
 
 func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 	var (
-		color  string
-		fields []hackyslack.D
-		totals []string
-		final  int
+		color    string
+		fields   []hackyslack.D
+		final    int
+		text     string
+		fallback string
 	)
-	for _, result := range results {
+	for i, result := range results {
+		if i == 0 {
+			if result.Operator == "-" {
+				final -= result.Total
+			} else {
+				final = result.Total
+			}
+			text = fmt.Sprint("*", final, "*")
+			fallback = fmt.Sprint(final)
+		} else {
+			op := result.Operator
+			switch result.Operator {
+			case roll.Add:
+				final += result.Total
+			case roll.Subtract:
+				final -= result.Total
+			case roll.Multiply:
+				final *= result.Total
+				op = "×"
+			case roll.Divide:
+				final /= result.Total
+			}
+			text += fmt.Sprint(" ", op, " *", result.Total, "*")
+			fallback += fmt.Sprint(" ", result.Operator, " ", result.Total)
+			if i == len(results)-1 {
+				text += fmt.Sprint(" = *", final, "*")
+				fallback += fmt.Sprint(" = ", final)
+			}
+		}
+		if result.Sides == 1 {
+			continue
+		}
 		single := result.Number * result.Sides / 3.0
 		rollText := fmt.Sprint(result.Rolls)
 		if result.Total > single*2 {
@@ -40,17 +71,6 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 			"value": rollText[1 : len(rollText)-1],
 			"short": true,
 		})
-		if result.Modifier != 0 {
-			fields = append(fields, hackyslack.D{
-				"title": "Raw",
-				"value": strconv.Itoa(result.Total),
-				"short": true,
-			}, hackyslack.D{
-				"title": "Modifier",
-				"value": strconv.Itoa(result.Modifier),
-				"short": true,
-			})
-		}
 		if result.Minimum != 0 {
 			count := 0
 			for _, r := range result.Rolls {
@@ -97,17 +117,6 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 				"short": true,
 			})
 		}
-		total := result.Total + result.Modifier
-		totals = append(totals, strconv.Itoa(total))
-		final += total
-	}
-	var text, fallback string
-	if len(totals) > 1 {
-		text = fmt.Sprint("*", strings.Join(totals, "* + *"), "* = *", final, "*")
-		fallback = fmt.Sprint(strings.Join(totals, "+"), " = ", final)
-	} else {
-		text = fmt.Sprint("*", strconv.Itoa(final), "*")
-		fallback = strconv.Itoa(final)
 	}
 	return hackyslack.D{
 		"response_type": "in_channel",
