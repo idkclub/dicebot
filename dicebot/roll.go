@@ -42,6 +42,14 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 				op = "×"
 			case roll.Divide:
 				final /= result.Total
+			case roll.Max:
+				if result.Total > final {
+					final = result.Total
+				}
+			case roll.Min:
+				if result.Total < final {
+					final = result.Total
+				}
 			}
 			text += fmt.Sprint(" ", op, " *", result.Total, "*")
 			fallback += fmt.Sprint(" ", result.Operator, " ", result.Total)

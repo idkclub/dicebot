@@ -7,13 +7,15 @@ import (
 	"strconv"
 )
 
-var regex = regexp.MustCompile(`(?i)(?P<op>[×*/+-])?\s*((?P<num>\d{0,3})d(?P<sides>%|\d{1,4})(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,3})?|(?P<const>\d{1,5}))`)
+var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>%|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,3})?|(?P<const>\d{1,5}))`)
 
 const (
 	Add      = "+"
 	Subtract = "-"
 	Multiply = "*"
 	Divide   = "/"
+	Max      = "^"
+	Min      = "v"
 )
 
 type Dice struct {
@@ -25,6 +27,7 @@ type Dice struct {
 	Keep     int
 	Rolls    []int
 	Removed  []int
+	Explode  bool
 	Total    int
 }
 
@@ -44,6 +47,8 @@ func Parse(text string) []*Dice {
 				} else if m[i] != "" {
 					dice.Operator = m[i]
 				}
+			case "explode":
+				dice.Explode = m[i] == "!"
 			case "const":
 				if m[i] != "" {
 					num, _ := strconv.Atoi(m[i])
@@ -113,14 +118,19 @@ func Parse(text string) []*Dice {
 
 func (r *Dice) Roll() {
 	r.Total = 0
+	r.Rolls = []int{}
 	if r.Sides == 1 {
 		r.Total = r.Number
 		return
 	}
-	for i := 0; i < r.Number; i++ {
+	num := r.Number
+	for i := 0; i < num; i++ {
 		n := rand.Intn(r.Sides) + 1
 		r.Total += n
 		r.Rolls = append(r.Rolls, n)
+		if r.Explode && n == r.Sides {
+			num++
+		}
 	}
 	if r.Keep != 0 {
 		sort.Ints(r.Rolls)

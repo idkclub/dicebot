@@ -14,6 +14,7 @@ var ParseTests = []RollTest{
 	{"d%", []Dice{{Operator: Add, Number: 1, Sides: 100}}},
 	{"2d%", []Dice{{Operator: Add, Number: 2, Sides: 100}}},
 	{"0d1", []Dice{{Operator: Add, Number: 1, Sides: 1}}},
+	{"1d6!", []Dice{{Operator: Add, Number: 1, Sides: 6, Explode: true}}},
 	{"1d20-1", []Dice{
 		{Operator: Add, Number: 1, Sides: 20},
 		{Operator: Subtract, Number: 1, Sides: 1},
@@ -65,7 +66,8 @@ type RollTest struct {
 func compareRolls(a Dice, b Dice) bool {
 	return a.Number == b.Number && a.Sides == b.Sides &&
 		a.Operator == b.Operator && a.Keep == b.Keep &&
-		a.Minimum == b.Minimum && a.Maximum == b.Maximum
+		a.Minimum == b.Minimum && a.Maximum == b.Maximum &&
+		a.Explode == b.Explode
 }
 
 func TestRoll(t *testing.T) {
@@ -84,7 +86,7 @@ func TestRoll(t *testing.T) {
 				if result.Total < result.Number {
 					t.Error(test.Text, "Rolled too low", *result)
 				}
-				if result.Total > result.Number*result.Sides {
+				if !result.Explode && result.Total > result.Number*result.Sides {
 					t.Error(test.Text, "Rolled too high", *result)
 				}
 			}
