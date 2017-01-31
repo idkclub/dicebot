@@ -25,7 +25,6 @@ var ParseTests = []RollTest{
 		{Operator: Add, Number: 2, Sides: 20},
 		{Operator: Add, Number: 12345, Sides: 1},
 	}},
-	//{"1234567890d123456790-1234567890", []Dice{{Operator:Add, Number: 100, Sides: 1000}}},
 	{"2d2+1 1d6", []Dice{
 		{Operator: Add, Number: 2, Sides: 2},
 		{Operator: Add, Number: 1, Sides: 1},
@@ -50,6 +49,8 @@ var ParseTests = []RollTest{
 	{"2d6<1", []Dice{{Operator: Add, Number: 2, Sides: 6, Maximum: 2}}},
 	{"6d6k5", []Dice{{Operator: Add, Number: 6, Sides: 6, Keep: 5}}},
 	{"2d6k5", []Dice{{Operator: Add, Number: 2, Sides: 6, Keep: 2}}},
+	{"6d6k-4", []Dice{{Operator: Add, Number: 6, Sides: 6, Keep: -4}}},
+	{"2d6k-5", []Dice{{Operator: Add, Number: 2, Sides: 6, Keep: -2}}},
 	{"2d6 + 1", []Dice{
 		{Operator: Add, Number: 2, Sides: 6},
 		{Operator: Add, Number: 1, Sides: 1},

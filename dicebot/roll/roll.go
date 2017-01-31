@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>[f%]|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k\d{1,3})?|(?P<alt>\d{1,5})(?P<fudge>f)?)`)
+var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>[f%]|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k-?\d{1,3})?|(?P<alt>\d{1,5})(?P<fudge>f)?)`)
 
 const (
 	Add      = "+"
@@ -94,6 +94,8 @@ func Parse(text string) []*Dice {
 				dice.Keep, _ = strconv.Atoi(m[i][1:])
 				if dice.Keep > dice.Number {
 					dice.Keep = dice.Number
+				} else if dice.Keep < -dice.Number {
+					dice.Keep = -dice.Number
 				}
 			case "max":
 				if m[i] == "" {
@@ -145,8 +147,15 @@ func (r *Dice) Roll() {
 	}
 	if r.Keep != 0 {
 		sort.Ints(r.Rolls)
-		r.Removed = r.Rolls[:len(r.Rolls)-r.Keep]
-		r.Rolls = r.Rolls[len(r.Rolls)-r.Keep:]
+		if r.Keep > 0 {
+			split := len(r.Rolls) - r.Keep
+			r.Removed = r.Rolls[:split]
+			r.Rolls = r.Rolls[split:]
+		} else {
+			split := -r.Keep
+			r.Removed = r.Rolls[split:]
+			r.Rolls = r.Rolls[:split]
+		}
 		r.Total = 0
 		for _, n := range r.Rolls {
 			r.Total += n
