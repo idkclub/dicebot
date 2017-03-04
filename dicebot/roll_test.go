@@ -48,7 +48,7 @@ func TestRollFormat(t *testing.T) {
 		if len(rolls) > 1 {
 			verify += fmt.Sprint(" = *", sum, "*")
 		}
-		resp := formatRoll(username, rolls)
+		resp := formatRoll(username, false, rolls)
 		if resp["response_type"] != "in_channel" {
 			t.Error("Incorrect response type", resp["response_type"])
 		}

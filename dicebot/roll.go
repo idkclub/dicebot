@@ -13,7 +13,7 @@ func init() {
 	hackyslack.Register("roll", command)
 }
 
-func formatRoll(name string, results []*roll.Dice) hackyslack.D {
+func formatRoll(name string, mini bool, results []*roll.Dice) hackyslack.D {
 	var (
 		color    string
 		fields   []hackyslack.D
@@ -140,6 +140,9 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 			})
 		}
 	}
+	if mini {
+		fields = []hackyslack.D{}
+	}
 	return hackyslack.D{
 		"response_type": "in_channel",
 		"attachments": []hackyslack.D{
@@ -157,9 +160,10 @@ func formatRoll(name string, results []*roll.Dice) hackyslack.D {
 
 func command(args hackyslack.Args) hackyslack.D {
 	rand.Seed(time.Now().UnixNano())
+	mini := args.Text[:4] == "mini"
 	result := roll.Parse(args.Text)
 	for _, roll := range result {
 		roll.Roll()
 	}
-	return formatRoll(args.UserName, result)
+	return formatRoll(args.UserName, mini, result)
 }
