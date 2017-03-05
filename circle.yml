@@ -7,4 +7,9 @@ deployment:
     branch: master
     owner: arkie
     commands:
-      - $HOME/go_appengine/appcfg.py --application hacky-slack -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
+      - $HOME/go_appengine/appcfg.py --application dice-b -E SLACK_ID:$SLACK_ID_PROD -E SLACK_SECRET:$SLACK_SECRET_PROD --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
+  appengine:
+    branch: /.*/
+    owner: arkie
+    commands:
+      - $HOME/go_appengine/appcfg.py --application hacky-slack -E ROLL_COMMAND:roll-test -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
