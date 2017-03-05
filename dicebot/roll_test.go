@@ -17,6 +17,7 @@ var FormatTests = []string{
 	"10d10<5",
 	"10d10k5",
 	"2d6 / 2d6",
+	"mini 2d6 / 2d6",
 }
 
 func TestRollFormat(t *testing.T) {
