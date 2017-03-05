@@ -5,12 +5,17 @@ import (
 	"github.com/arkie/hackyslack2"
 	"github.com/arkie/hackyslack2/dicebot/roll"
 	"math/rand"
+	"os"
 	"strconv"
 	"time"
 )
 
 func init() {
-	hackyslack.Register("roll", command)
+	r := os.Getenv("ROLL_COMMAND")
+	if r == "" {
+		r = "roll"
+	}
+	hackyslack.Register(r, command)
 }
 
 func formatRoll(name string, mini bool, results []*roll.Dice) hackyslack.D {
@@ -30,6 +35,10 @@ func formatRoll(name string, mini bool, results []*roll.Dice) hackyslack.D {
 			}
 			text = fmt.Sprint("*", final, "*")
 			fallback = fmt.Sprint(final)
+			if result.For != "" {
+				text += fmt.Sprint(" for *", result.For, "*")
+				fallback += fmt.Sprint(" for ", result.For)
+			}
 		} else {
 			op := result.Operator
 			switch result.Operator {
@@ -53,6 +62,10 @@ func formatRoll(name string, mini bool, results []*roll.Dice) hackyslack.D {
 			}
 			text += fmt.Sprint(" ", op, " *", result.Total, "*")
 			fallback += fmt.Sprint(" ", result.Operator, " ", result.Total)
+			if result.For != "" {
+				text += fmt.Sprint(" for *", result.For, "*")
+				fallback += fmt.Sprint(" for ", result.For)
+			}
 			if i == len(results)-1 {
 				text += fmt.Sprint(" = *", final, "*")
 				fallback += fmt.Sprint(" = ", final)

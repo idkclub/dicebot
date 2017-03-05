@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>[f%]|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k-?\d{1,3})?|(?P<alt>\d{1,5})(?P<fudge>f)?)`)
+var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>[f%]|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k-?\d{1,3})?|(?P<alt>\d{1,5})(?P<fudge>f)?)( for (?P<for>[^,;]+))?`)
 
 const (
 	Add      = "+"
@@ -30,6 +30,7 @@ type Dice struct {
 	Explode  bool
 	Fudge    bool
 	Total    int
+	For      string
 }
 
 func Parse(text string) []*Dice {
@@ -112,6 +113,8 @@ func Parse(text string) []*Dice {
 						dice.Maximum = 2
 					}
 				}
+			case "for":
+				dice.For = m[i]
 			}
 		}
 		rolls = append(rolls, dice)
