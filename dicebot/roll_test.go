@@ -62,3 +62,16 @@ func TestRollFormat(t *testing.T) {
 		}
 	}
 }
+
+// Test for panics.
+func TestCommand(t *testing.T) {
+	for _, test := range FormatTests {
+		resp := command(hackyslack.Args{
+			Text:     test,
+			UserName: "CommandTest",
+		})
+		if resp["response_type"] != "in_channel" {
+			t.Error("Incorrect response type", resp["response_type"])
+		}
+	}
+}
