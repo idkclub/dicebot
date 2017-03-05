@@ -173,7 +173,7 @@ func formatRoll(name string, mini bool, results []*roll.Dice) hackyslack.D {
 
 func command(args hackyslack.Args) hackyslack.D {
 	rand.Seed(time.Now().UnixNano())
-	mini := args.Text[:4] == "mini"
+	mini := len(args.Text) > 4 && args.Text[:4] == "mini"
 	result := roll.Parse(args.Text)
 	for _, roll := range result {
 		roll.Roll()
