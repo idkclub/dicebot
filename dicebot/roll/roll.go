@@ -74,7 +74,7 @@ func Parse(text string) []*Dice {
 			case "sides":
 				if m[i] == "" {
 					dice.Sides = 6
-				} else if m[i] == "f" {
+				} else if m[i] == "f" || m[i] == "F" {
 					dice.Fudge = true
 					dice.Sides = 3
 				} else if m[i] == "%" {
