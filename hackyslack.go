@@ -33,9 +33,9 @@ type D map[string]interface{}
 type Args struct {
 	TeamId      string
 	TeamDomain  string
-	ChannelId   string
+	ChannelID   string
 	ChannelName string
-	UserId      string
+	UserID      string
 	UserName    string
 	Command     string
 	Text        string
@@ -78,9 +78,9 @@ func Route(w http.ResponseWriter, r *http.Request) {
 	args := Args{
 		TeamId:      r.FormValue("team_id"),
 		TeamDomain:  r.FormValue("team_domain"),
-		ChannelId:   r.FormValue("channel_id"),
+		ChannelID:   r.FormValue("channel_id"),
 		ChannelName: r.FormValue("channel_name"),
-		UserId:      r.FormValue("user_id"),
+		UserID:      r.FormValue("user_id"),
 		UserName:    r.FormValue("user_name"),
 		Command:     r.FormValue("command"),
 		Text:        r.FormValue("text"),

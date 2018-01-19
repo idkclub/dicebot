@@ -18,7 +18,7 @@ func init() {
 	hackyslack.Register(r, command)
 }
 
-func formatRoll(name string, mini bool, results []*roll.Dice) hackyslack.D {
+func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 	var (
 		color    string
 		fields   []hackyslack.D
@@ -160,8 +160,8 @@ func formatRoll(name string, mini bool, results []*roll.Dice) hackyslack.D {
 		"response_type": "in_channel",
 		"attachments": []hackyslack.D{
 			{
-				"fallback": fmt.Sprint("@", name, " rolled ", fallback),
-				"text":     fmt.Sprint("@", name, " rolled ", text),
+				"fallback": fmt.Sprint("<@", id, "> rolled ", fallback),
+				"text":     fmt.Sprint("<@", id, "> rolled ", text),
 				// TODO: Color just uses the last color chosen.
 				"color":     color,
 				"fields":    fields,
@@ -178,5 +178,5 @@ func command(args hackyslack.Args) hackyslack.D {
 	for _, roll := range result {
 		roll.Roll()
 	}
-	return formatRoll(args.UserName, mini, result)
+	return formatRoll(args.UserID, mini, result)
 }
