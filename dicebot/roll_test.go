@@ -21,10 +21,10 @@ var FormatTests = []string{
 }
 
 func TestRollFormat(t *testing.T) {
-	username := "TestUser"
+	userID := "1234"
 	for _, test := range FormatTests {
 		rolls := roll.Parse(test)
-		verify := fmt.Sprint("@", username, " rolled ")
+		verify := fmt.Sprint("<@", userID, "> rolled ")
 		sum := 0
 		for i, result := range rolls {
 			result.Roll()
@@ -49,7 +49,7 @@ func TestRollFormat(t *testing.T) {
 		if len(rolls) > 1 {
 			verify += fmt.Sprint(" = *", sum, "*")
 		}
-		resp := formatRoll(username, false, rolls)
+		resp := formatRoll(userID, false, rolls)
 		if resp["response_type"] != "in_channel" {
 			t.Error("Incorrect response type", resp["response_type"])
 		}
