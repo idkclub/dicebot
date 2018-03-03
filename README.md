@@ -1,4 +1,4 @@
-DiceBot [![Build Status](https://circleci.com/gh/arkie/hackyslack2.svg?style=shield)](https://circleci.com/gh/arkie/hackyslack2)
+DiceBot [![Build Status](https://circleci.com/gh/arkie/dicebot.svg?style=shield)](https://circleci.com/gh/arkie/dicebot)
 -------
 
 [DiceBot](https://slack.com/apps/A0K7BALJ1-dicebot) is a [Slack](https://slack.com/) app that runs on [App Engine](https://cloud.google.com/appengine/)
