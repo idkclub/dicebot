@@ -10,6 +10,7 @@ jobs:
       - run: ln -s $PWD /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
       - run: go get -d -t -v ./...
       - run: go test -race -v ./...
+
   deploy-stage:
     docker:
       - image: arkie/circle-gae:0.0.1
