@@ -1,0 +1,46 @@
+version: 2
+
+jobs:
+  test:
+    docker:
+      - image: circleci/golang:1.10
+    steps:
+      - run: mkdir -p /go/src/github.com/$CIRCLE_PROJECT_USERNAME
+      - checkout
+      - run: ln -s $PWD /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      - run: go get -d -t -v ./...
+      - run: go test -race -v ./...
+  deploy-stage:
+    docker:
+      - image: arkie/circle-gae:0.0.1
+    steps:
+      - run: mkdir -p /go/src/github.com/$CIRCLE_PROJECT_USERNAME
+      - checkout
+      - run: ln -s $PWD /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      - run: go get -d -t -v ./...
+      - run: $HOME/go_appengine/appcfg.py --application hacky-slack -E ROLL_COMMAND:roll-test -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
+
+  deploy-prod:
+    docker:
+      - image: arkie/circle-gae:0.0.1
+    steps:
+      - run: mkdir -p /go/src/github.com/$CIRCLE_PROJECT_USERNAME
+      - checkout
+      - run: ln -s $PWD /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      - run: go get -d -t -v ./...
+      - run: $HOME/go_appengine/appcfg.py --application dice-b -E SLACK_ID:$SLACK_ID_PROD -E SLACK_SECRET:$SLACK_SECRET_PROD --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
+
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - test
+      - deploy-stage:
+          requires:
+            - test
+      - deploy-prod:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
