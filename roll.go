@@ -2,8 +2,8 @@ package dicebot
 
 import (
 	"fmt"
-	"github.com/arkie/hackyslack2"
-	"github.com/arkie/hackyslack2/dicebot/roll"
+	"github.com/arkie/hackyslack2/roll"
+	"github.com/arkie/hackyslack2/slack"
 	"math/rand"
 	"os"
 	"strconv"
@@ -15,13 +15,13 @@ func init() {
 	if r == "" {
 		r = "roll"
 	}
-	hackyslack.Register(r, command)
+	slack.Register(r, command)
 }
 
-func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
+func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 	var (
 		color    string
-		fields   []hackyslack.D
+		fields   []slack.D
 		final    int
 		text     string
 		fallback string
@@ -97,11 +97,11 @@ func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 		if result.Fudge {
 			dice = fmt.Sprint(result.Number, "df")
 		}
-		fields = append(fields, hackyslack.D{
+		fields = append(fields, slack.D{
 			"title": "Dice",
 			"value": dice,
 			"short": true,
-		}, hackyslack.D{
+		}, slack.D{
 			"title": "Rolls",
 			"value": rollText[1 : len(rollText)-1],
 			"short": true,
@@ -113,11 +113,11 @@ func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 					count++
 				}
 			}
-			fields = append(fields, hackyslack.D{
+			fields = append(fields, slack.D{
 				"title": "Minimum",
 				"value": strconv.Itoa(result.Minimum),
 				"short": true,
-			}, hackyslack.D{
+			}, slack.D{
 				"title": "Over",
 				"value": strconv.Itoa(count),
 				"short": true,
@@ -130,11 +130,11 @@ func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 					count++
 				}
 			}
-			fields = append(fields, hackyslack.D{
+			fields = append(fields, slack.D{
 				"title": "Maximum",
 				"value": strconv.Itoa(result.Maximum),
 				"short": true,
-			}, hackyslack.D{
+			}, slack.D{
 				"title": "Under",
 				"value": strconv.Itoa(count),
 				"short": true,
@@ -142,11 +142,11 @@ func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 		}
 		if result.Keep != 0 {
 			removed := fmt.Sprint(result.Removed)
-			fields = append(fields, hackyslack.D{
+			fields = append(fields, slack.D{
 				"title": "Keep",
 				"value": strconv.Itoa(result.Keep),
 				"short": true,
-			}, hackyslack.D{
+			}, slack.D{
 				"title": "Removed",
 				"value": removed[1 : len(removed)-1],
 				"short": true,
@@ -154,11 +154,11 @@ func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 		}
 	}
 	if mini {
-		fields = []hackyslack.D{}
+		fields = []slack.D{}
 	}
-	return hackyslack.D{
+	return slack.D{
 		"response_type": "in_channel",
-		"attachments": []hackyslack.D{
+		"attachments": []slack.D{
 			{
 				"fallback": fmt.Sprint("<@", id, "> rolled ", fallback),
 				"text":     fmt.Sprint("<@", id, "> rolled ", text),
@@ -171,7 +171,7 @@ func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 	}
 }
 
-func command(args hackyslack.Args) hackyslack.D {
+func command(args slack.Args) slack.D {
 	rand.Seed(time.Now().UnixNano())
 	mini := len(args.Text) > 4 && args.Text[:4] == "mini"
 	result := roll.Parse(args.Text)
