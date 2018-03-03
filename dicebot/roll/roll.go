@@ -63,8 +63,8 @@ func Parse(text string) []*Dice {
 					dice.Sides = 1
 				}
 			case "num":
-				num, _ := strconv.Atoi(m[i])
-				if num < 1 {
+				num, err := strconv.Atoi(m[i])
+				if err != nil {
 					num = 1
 				}
 				if num > 100 {
@@ -82,7 +82,7 @@ func Parse(text string) []*Dice {
 				} else {
 					dice.Sides, _ = strconv.Atoi(m[i])
 					if dice.Sides < 1 {
-						dice.Sides = 1
+						dice.Sides = 0
 					}
 					if dice.Sides > 1000 {
 						dice.Sides = 1000
@@ -132,6 +132,10 @@ func Parse(text string) []*Dice {
 func (r *Dice) Roll() {
 	r.Total = 0
 	r.Rolls = []int{}
+	if r.Sides == 0 {
+		r.Total = 0
+		return
+	}
 	if r.Sides == 1 {
 		r.Total = r.Number
 		return
