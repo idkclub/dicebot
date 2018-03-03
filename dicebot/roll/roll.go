@@ -132,6 +132,10 @@ func Parse(text string) []*Dice {
 func (r *Dice) Roll() {
 	r.Total = 0
 	r.Rolls = []int{}
+	if r.Sides == 0 {
+		r.Total = 0
+		return
+	}
 	if r.Sides == 1 {
 		r.Total = r.Number
 		return
