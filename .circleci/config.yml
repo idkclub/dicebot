@@ -3,22 +3,23 @@ version: 2
 jobs:
   test:
     docker:
-    - image: circleci/golang:1.10
+      - image: circleci/golang:1.10
     steps:
-    - checkout
-    - run: go get -d -t -v ./...
-    - run: go test -race -v ./...
-  deploy-staging:
+      - checkout
+      - run: go get -d -t -v ./...
+      - run: go test -race -v ./...
+  stage:
     docker:
-    - image: arkie/circle-gae:0.0.1
+      - image: arkie/circle-gae:0.0.1
     steps:
-    - checkout
-    - $HOME/go_appengine/appcfg.py --application hacky-slack -E ROLL_COMMAND:roll-test -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
+      - checkout
+      - $HOME/go_appengine/appcfg.py --application hacky-slack -E ROLL_COMMAND:roll-test -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
 
 workflows:
   version: 2
   test_and_deploy:
     jobs:
       - test
-      - deploy-staging:
-        requires: test
+      - stage:
+          requires:
+            - test
