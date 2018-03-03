@@ -5,14 +5,19 @@ jobs:
     docker:
       - image: circleci/golang:1.10
     steps:
+      - run: mkdir -p /go/src/github.com/$CIRCLE_PROJECT_USERNAME
       - checkout
+      - run: ln -s $PWD /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
       - run: go get -d -t -v ./...
       - run: go test -race -v ./...
   stage:
     docker:
       - image: arkie/circle-gae:0.0.1
     steps:
+      - run: mkdir -p /go/src/github.com/$CIRCLE_PROJECT_USERNAME
       - checkout
+      - run: ln -s $PWD /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+      - run: go get -d -t -v ./...
       - $HOME/go_appengine/appcfg.py --application hacky-slack -E ROLL_COMMAND:roll-test -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
 
 workflows:
