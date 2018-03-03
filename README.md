@@ -1,4 +1,17 @@
-The dicebot app does a pretty forgiving parsing of the text passed to the `/roll` command,
+DiceBot [![Build Status](https://circleci.com/gh/arkie/hackyslack2.svg?style=shield)](https://circleci.com/gh/arkie/hackyslack2)
+-------
+
+[DiceBot](https://slack.com/apps/A0K7BALJ1-dicebot) is a [Slack](https://slack.com/) app that runs on [App Engine](https://cloud.google.com/appengine/)
+
+Installing
+----------
+
+Click `Add to Slack` on [this page](https://dice-b.appspot.com/) to install into your own Slack.
+
+Usage
+-----
+
+The DiceBot app does a pretty forgiving parsing of the text passed to the `/roll` command,
 to figure out what sort of dice to roll and how to use them.
 
 First, it scans the string for all the "roll expressions" it can find.
