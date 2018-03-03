@@ -2,8 +2,8 @@ package dicebot
 
 import (
 	"fmt"
-	"github.com/arkie/hackyslack2"
-	"github.com/arkie/hackyslack2/dicebot/roll"
+	"github.com/arkie/hackyslack2/roll"
+	"github.com/arkie/hackyslack2/slack"
 	"testing"
 )
 
@@ -53,7 +53,7 @@ func TestRollFormat(t *testing.T) {
 		if resp["response_type"] != "in_channel" {
 			t.Error("Incorrect response type", resp["response_type"])
 		}
-		attach := resp["attachments"].([]hackyslack.D)[0]
+		attach := resp["attachments"].([]slack.D)[0]
 		if attach["color"] == "" {
 			t.Error("Missing color")
 		}
@@ -66,7 +66,7 @@ func TestRollFormat(t *testing.T) {
 // Test for panics.
 func TestCommand(t *testing.T) {
 	for _, test := range FormatTests {
-		resp := command(hackyslack.Args{
+		resp := command(slack.Args{
 			Text:     test,
 			UserName: "CommandTest",
 		})

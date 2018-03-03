@@ -1,4 +1,4 @@
-package hackyslack
+package slack
 
 import (
 	"encoding/json"

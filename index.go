@@ -1,7 +1,7 @@
 package dicebot
 
 import (
-	"github.com/arkie/hackyslack2"
+	"github.com/arkie/hackyslack2/slack"
 	"html/template"
 	"net/http"
 	"os"
@@ -14,10 +14,10 @@ var (
 )
 
 func init() {
-	hackyslack.Configure(clientId, clientSecret)
+	slack.Configure(clientId, clientSecret)
 
-	http.HandleFunc("/command", hackyslack.Route)
-	http.HandleFunc("/oauth", hackyslack.Oauth)
+	http.HandleFunc("/command", slack.Route)
+	http.HandleFunc("/oauth", slack.Oauth)
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/contact", contact)
@@ -30,14 +30,14 @@ type page struct {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	c, _ := r.Cookie(hackyslack.Cookie)
+	c, _ := r.Cookie(slack.Cookie)
 	http.SetCookie(w, &http.Cookie{
-		Name:   hackyslack.Cookie,
+		Name:   slack.Cookie,
 		MaxAge: -1,
 	})
 	if c != nil {
 		s := "Installed Dicebot."
-		if c.Value != hackyslack.Okay {
+		if c.Value != slack.Okay {
 			s = "Error Installing"
 		}
 		templates.ExecuteTemplate(w, "index.html", page{
