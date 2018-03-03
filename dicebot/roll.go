@@ -71,7 +71,7 @@ func formatRoll(id string, mini bool, results []*roll.Dice) hackyslack.D {
 				fallback += fmt.Sprint(" = ", final)
 			}
 		}
-		if result.Sides == 1 {
+		if result.Sides <= 1 {
 			continue
 		}
 		rollText := fmt.Sprint(result.Rolls)
