@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run: ln -s $PWD /go/src/github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
       - run: go get -d -t -v ./...
-      - $HOME/go_appengine/appcfg.py --application hacky-slack -E ROLL_COMMAND:roll-test -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
+      - run: $HOME/go_appengine/appcfg.py --application hacky-slack -E ROLL_COMMAND:roll-test -E SLACK_ID:$SLACK_ID -E SLACK_SECRET:$SLACK_SECRET --oauth2_refresh_token=$APPENGINE_TOKEN update dicebot
 
 workflows:
   version: 2
