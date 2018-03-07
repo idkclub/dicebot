@@ -26,6 +26,8 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 		text      string
 		fallback  string
 		rollCount int
+		finalSum  int
+		forCount  int
 	)
 	for i, result := range results {
 		op := result.Operator
@@ -59,17 +61,20 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 		fallback += fmt.Sprint(result.Total)
 		rollCount++
 		if result.For != "" {
+			forCount++
 			if rollCount > 1 {
 				text += fmt.Sprint(" = *", final, "*")
 				fallback += fmt.Sprint(" = ", final)
 			}
+			finalSum += final
 			final = 0
 			rollCount = 0
 			text += fmt.Sprint(" for *", result.For, "*")
 			fallback += fmt.Sprint(" for ", result.For)
-		} else if i == len(results)-1 && i > 0 {
-			text += fmt.Sprint(" = *", final, "*")
-			fallback += fmt.Sprint(" = ", final)
+		}
+		if i == len(results)-1 && i > 0 && (forCount != 1 || rollCount > 0) {
+			text += fmt.Sprint(" = *", finalSum+final, "*")
+			fallback += fmt.Sprint(" = ", finalSum+final)
 		}
 		if result.Sides <= 1 {
 			continue
