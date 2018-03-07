@@ -7,7 +7,11 @@ import (
 	"testing"
 )
 
-var FormatTests = []string{
+const (
+	userID = "1234"
+)
+
+var formatTests = []string{
 	"",
 	"d6",
 	"10d10-5",
@@ -21,8 +25,7 @@ var FormatTests = []string{
 }
 
 func TestRollFormat(t *testing.T) {
-	userID := "1234"
-	for _, test := range FormatTests {
+	for _, test := range formatTests {
 		rolls := roll.Parse(test)
 		verify := fmt.Sprint("<@", userID, "> rolled ")
 		sum := 0
@@ -65,7 +68,7 @@ func TestRollFormat(t *testing.T) {
 
 // Test for panics.
 func TestCommand(t *testing.T) {
-	for _, test := range FormatTests {
+	for _, test := range formatTests {
 		resp := command(slack.Args{
 			Text:     test,
 			UserName: "CommandTest",
@@ -73,5 +76,15 @@ func TestCommand(t *testing.T) {
 		if resp["response_type"] != "in_channel" {
 			t.Error("Incorrect response type", resp["response_type"])
 		}
+	}
+}
+
+func TestFor(t *testing.T) {
+	rolls := roll.Parse("d20 for initiative, 2d6 + 5 for attack")
+	resp := formatRoll(userID, false, rolls)
+	attach := resp["attachments"].([]slack.D)[0]
+	verify := "<@1234> rolled 0 for initiative + 0 + 0 = 0 for attack = 0"
+	if attach["fallback"] != verify {
+		t.Error("Incorrect response text", attach["fallback"], "instead of", verify)
 	}
 }

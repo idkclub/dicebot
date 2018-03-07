@@ -68,7 +68,7 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 			text += fmt.Sprint(" ", op, " *", result.Total, "*")
 			fallback += fmt.Sprint(" ", result.Operator, " ", result.Total)
 			if result.For != "" {
-				if rollCount > 1 {
+				if rollCount > 0 {
 					rollCount = 0
 					text += fmt.Sprint(" = *", runningTotal, "*")
 					fallback += fmt.Sprint(" = ", runningTotal)
@@ -76,6 +76,8 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 				}
 				text += fmt.Sprint(" for *", result.For, "*")
 				fallback += fmt.Sprint(" for ", result.For)
+			} else {
+				rollCount++
 			}
 			if i == len(results)-1 {
 				text += fmt.Sprint(" = *", final, "*")
