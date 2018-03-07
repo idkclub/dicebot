@@ -83,7 +83,7 @@ func TestFor(t *testing.T) {
 	rolls := roll.Parse("d20 for initiative, 2d6 + 5 for attack")
 	resp := formatRoll(userID, false, rolls)
 	attach := resp["attachments"].([]slack.D)[0]
-	verify := "<@1234> rolled 0 for initiative + 0 + 0 = 0 for attack = 0"
+	verify := "<@1234> rolled 0 for initiative + 0 + 0 = 0 for attack"
 	if attach["fallback"] != verify {
 		t.Error("Incorrect response text", attach["fallback"], "instead of", verify)
 	}
