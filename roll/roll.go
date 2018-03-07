@@ -35,7 +35,7 @@ type Dice struct {
 
 func Parse(text string) []*Dice {
 	var rolls []*Dice
-	for _, m := range regex.FindAllStringSubmatch(text, 5) {
+	for _, m := range regex.FindAllStringSubmatch(text, 8) {
 		dice := &Dice{
 			Operator: Add,
 			Number:   2,

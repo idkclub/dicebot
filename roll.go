@@ -20,56 +20,61 @@ func init() {
 
 func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 	var (
-		color    string
-		fields   []slack.D
-		final    int
-		text     string
-		fallback string
+		color     string
+		fields    []slack.D
+		final     int
+		text      string
+		fallback  string
+		rollCount int
+		finalSum  int
+		forCount  int
 	)
 	for i, result := range results {
-		if i == 0 {
-			if result.Operator == "-" {
-				final -= result.Total
-			} else {
+		op := result.Operator
+		switch result.Operator {
+		case roll.Add:
+			final += result.Total
+		case roll.Subtract:
+			final -= result.Total
+		case roll.Multiply:
+			final *= result.Total
+			op = "×"
+		case roll.Divide:
+			// Just ignoring divide by zero.
+			if result.Total != 0 {
+				final /= result.Total
+			}
+		case roll.Max:
+			if result.Total > final {
 				final = result.Total
 			}
-			text = fmt.Sprint("*", final, "*")
-			fallback = fmt.Sprint(final)
-			if result.For != "" {
-				text += fmt.Sprint(" for *", result.For, "*")
-				fallback += fmt.Sprint(" for ", result.For)
+		case roll.Min:
+			if result.Total < final {
+				final = result.Total
 			}
-		} else {
-			op := result.Operator
-			switch result.Operator {
-			case roll.Add:
-				final += result.Total
-			case roll.Subtract:
-				final -= result.Total
-			case roll.Multiply:
-				final *= result.Total
-				op = "×"
-			case roll.Divide:
-				final /= result.Total
-			case roll.Max:
-				if result.Total > final {
-					final = result.Total
-				}
-			case roll.Min:
-				if result.Total < final {
-					final = result.Total
-				}
-			}
-			text += fmt.Sprint(" ", op, " *", result.Total, "*")
-			fallback += fmt.Sprint(" ", result.Operator, " ", result.Total)
-			if result.For != "" {
-				text += fmt.Sprint(" for *", result.For, "*")
-				fallback += fmt.Sprint(" for ", result.For)
-			}
-			if i == len(results)-1 {
+		}
+		if i != 0 {
+			text += fmt.Sprint(" ", op, " ")
+			fallback += fmt.Sprint(" ", op, " ")
+		}
+		text += fmt.Sprint("*", result.Total, "*")
+		fallback += fmt.Sprint(result.Total)
+		rollCount++
+		if result.For != "" {
+			forCount++
+			if rollCount > 1 {
 				text += fmt.Sprint(" = *", final, "*")
 				fallback += fmt.Sprint(" = ", final)
 			}
+			finalSum += final
+			final = 0
+			rollCount = 0
+			text += fmt.Sprint(" for *", result.For, "*")
+			fallback += fmt.Sprint(" for ", result.For)
+		}
+		if i == len(results)-1 && i > 0 && (forCount != 1 || rollCount > 0) {
+			text += fmt.Sprint(" = *", finalSum+final, "*")
+			fallback += fmt.Sprint(" = ", finalSum+final)
 		}
 		if result.Sides <= 1 {
 			continue
@@ -96,6 +101,8 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 		dice := fmt.Sprint(result.Number, "d", result.Sides)
 		if result.Fudge {
 			dice = fmt.Sprint(result.Number, "df")
+		} else if result.Explode {
+			dice += "!"
 		}
 		fields = append(fields, slack.D{
 			"title": "Dice",
