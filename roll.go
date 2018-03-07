@@ -109,6 +109,8 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 		dice := fmt.Sprint(result.Number, "d", result.Sides)
 		if result.Fudge {
 			dice = fmt.Sprint(result.Number, "df")
+		} else if result.Explode {
+			dice += "!"
 		}
 		fields = append(fields, slack.D{
 			"title": "Dice",
