@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d{0,3})d(?P<sides>[f%]|\d{1,4})(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k-?\d{1,3})?|(?P<alt>\d{1,5})(?P<fudge>f)?)( for (?P<for>[^,;]+))?`)
+var regex = regexp.MustCompile(`(?i)(?P<op>[×*/^v+-])?\s*((?P<num>\d*)d(?P<sides>[f%]|\d+)(?P<explode>!)?(?P<max>[<>]\d{1,4})?(?P<keep>k-?\d{1,3})?|(?P<alt>\d{1,5})(?P<fudge>f)?)( for (?P<for>[^,;]+))?`)
 
 const (
 	Add      = "+"
@@ -84,8 +84,8 @@ func Parse(text string) []*Dice {
 					if dice.Sides < 1 {
 						dice.Sides = 0
 					}
-					if dice.Sides > 1000 {
-						dice.Sides = 1000
+					if dice.Sides > 1000000 {
+						dice.Sides = 1000000
 					}
 				}
 			case "keep":
