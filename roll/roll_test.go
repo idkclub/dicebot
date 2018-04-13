@@ -5,6 +5,7 @@ import (
 )
 
 var ParseTests = []RollTest{
+	{"1234567890d1234567890", []Dice{{Operator: Add, Number: 100, Sides: 1000000}}},
 	{"2d6", []Dice{{Operator: Add, Number: 2, Sides: 6}}},
 	{"", []Dice{{Operator: Add, Number: 2, Sides: 6}}},
 	{"blah", []Dice{{Operator: Add, Number: 2, Sides: 6}}},
