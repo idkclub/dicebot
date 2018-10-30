@@ -52,7 +52,7 @@ func TestRollFormat(t *testing.T) {
 		if len(rolls) > 1 {
 			verify += fmt.Sprint(" = *", sum, "*")
 		}
-		resp := formatRoll(userID, false, rolls)
+		resp := formatRoll(userID, false, false, rolls)
 		if resp["response_type"] != "in_channel" {
 			t.Error("Incorrect response type", resp["response_type"])
 		}
@@ -62,6 +62,10 @@ func TestRollFormat(t *testing.T) {
 		}
 		if attach["text"] != verify {
 			t.Error("Incorrect response text", attach["text"], "instead of", verify)
+		}
+		resp = formatRoll(userID, false, true, rolls)
+		if resp["response_type"] != "ephemeral" {
+			t.Error("Incorrect response type", resp["response_type"])
 		}
 	}
 }
@@ -81,7 +85,7 @@ func TestCommand(t *testing.T) {
 
 func TestFor(t *testing.T) {
 	rolls := roll.Parse("d20 for initiative, 2d6 + 5 for attack")
-	resp := formatRoll(userID, false, rolls)
+	resp := formatRoll(userID, false, false, rolls)
 	attach := resp["attachments"].([]slack.D)[0]
 	verify := "<@1234> rolled 0 for initiative + 0 + 0 = 0 for attack = 0"
 	if attach["fallback"] != verify {

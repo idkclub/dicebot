@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -18,7 +19,7 @@ func init() {
 	slack.Register(r, command)
 }
 
-func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
+func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D {
 	var (
 		color     string
 		fields    []slack.D
@@ -163,8 +164,12 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 	if mini {
 		fields = []slack.D{}
 	}
+	response := "in_channel"
+	if silent {
+		response = "ephemeral"
+	}
 	return slack.D{
-		"response_type": "in_channel",
+		"response_type": response,
 		"attachments": []slack.D{
 			{
 				"fallback": fmt.Sprint("<@", id, "> rolled ", fallback),
@@ -180,10 +185,11 @@ func formatRoll(id string, mini bool, results []*roll.Dice) slack.D {
 
 func command(args slack.Args) slack.D {
 	rand.Seed(time.Now().UnixNano())
-	mini := len(args.Text) > 4 && args.Text[:4] == "mini"
+	mini := strings.HasPrefix(args.Text, "mini")
+	silent := strings.HasPrefix(args.Text, "silent")
 	result := roll.Parse(args.Text)
 	for _, roll := range result {
 		roll.Roll()
 	}
-	return formatRoll(args.UserID, mini, result)
+	return formatRoll(args.UserID, mini, silent, result)
 }
