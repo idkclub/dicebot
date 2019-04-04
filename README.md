@@ -61,6 +61,8 @@ There are a few possible forms:
 	* Optionally, a `<5` or `>5` (for any number between 2 and the die size - 1) to indicate that you want to count up how many dice rolled below or above the value.
 	* Optionally, a `k5` or `k-5` (for any number between -999 and 999) to indicate that only the best K (for positive values) or worst K (for negative values) rolls should be counted in the result.
 
+If no dice expression is provided, the DiceBot app will default to `2d6` or two six-sided dice similar to `//roll` from AOL Instant Messenger.
+
 Examples
 --------
 
