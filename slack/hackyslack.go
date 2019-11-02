@@ -1,12 +1,13 @@
 package slack
 
 import (
+	"cloud.google.com/go/datastore"
+	"context"
 	"encoding/json"
 	"golang.org/x/oauth2"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/datastore"
-	"google.golang.org/appengine/log"
+	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -27,7 +28,17 @@ var (
 			TokenURL: "https://slack.com/api/oauth.access",
 		},
 	}
+	client *datastore.Client
 )
+
+func init() {
+	ctx := context.Background()
+	var err error
+	client, err = datastore.NewClient(ctx, os.Getenv("PROJECT_ID"))
+	if err != nil {
+		log.Printf("ERROR - Failed to connect to datastore: %v", err)
+	}
+}
 
 type D map[string]interface{}
 type Args struct {
@@ -67,8 +78,7 @@ func Register(name string, cmd Command) {
 func writeJson(w http.ResponseWriter, r *http.Request, data D) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
-		c := appengine.NewContext(r)
-		log.Errorf(c, "Failed to mashal %v: %v", data, err)
+		log.Printf("ERROR - Failed to mashal %v: %v", data, err)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)
@@ -86,8 +96,7 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		Text:        r.FormValue("text"),
 		ResponseUrl: r.FormValue("response_url"),
 	}
-	c := appengine.NewContext(r)
-	log.Infof(c, "Got command %v", args)
+	log.Printf("INFO - Got command %v", args)
 	cmd, ok := commands[args.Command]
 	if ok {
 		writeJson(w, r, cmd(args))
@@ -102,10 +111,10 @@ func Oauth(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", 303)
 		return
 	}
-	c := appengine.NewContext(r)
+	c := r.Context()
 	tok, err := conf.Exchange(c, code[0])
 	if err != nil || !tok.Valid() {
-		log.Errorf(c, "Failed to exchange token %v: %v", tok, err)
+		log.Printf("ERROR - Failed to exchange token %v: %v", tok, err)
 		http.SetCookie(w, &http.Cookie{
 			Name:  Cookie,
 			Value: Error,
@@ -123,8 +132,15 @@ func Oauth(w http.ResponseWriter, r *http.Request) {
 		Scope:        tok.Extra("scope").(string),
 		Created:      time.Now(),
 	}
-	key := datastore.NewKey(c, "token", team.TeamId, 0, nil)
-	datastore.Put(c, key, &team)
+	key := datastore.NameKey("token", team.TeamId, nil)
+	if client == nil {
+		log.Printf("ERROR - Datastore unusable, got team %+v", team)
+	} else {
+		_, err := client.Put(c, key, &team)
+		if err != nil {
+			log.Printf("ERROR - Failed to save team %+v", team)
+		}
+	}
 	http.SetCookie(w, &http.Cookie{
 		Name:  Cookie,
 		Value: Okay,

@@ -1,4 +1,4 @@
-package dicebot
+package main
 
 import (
 	"fmt"

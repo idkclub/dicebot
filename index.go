@@ -1,8 +1,9 @@
-package dicebot
+package main
 
 import (
 	"github.com/arkie/dicebot/slack"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 )
@@ -22,6 +23,16 @@ func init() {
 	http.HandleFunc("/", index)
 	http.HandleFunc("/contact", contact)
 	http.HandleFunc("/privacy", privacy)
+}
+
+func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Listening on port %s", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 type page struct {
