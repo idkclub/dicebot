@@ -1,28 +1,46 @@
-package dicebot
+package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/arkie/dicebot/roll"
-	"github.com/arkie/dicebot/slack"
+	"log"
 	"math/rand"
-	"os"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func init() {
-	r := os.Getenv("ROLL_COMMAND")
-	if r == "" {
-		r = "roll"
+type D map[string]interface{}
+
+func Route(w http.ResponseWriter, r *http.Request) {
+	rand.Seed(time.Now().UnixNano())
+	text := r.FormValue("text")
+	mini := strings.HasPrefix(text, "mini")
+	silent := strings.HasPrefix(text, "silent")
+	result := roll.Parse(text)
+	for _, roll := range result {
+		roll.Roll()
 	}
-	slack.Register(r, command)
+	log.Printf("INFO - Got command %v", r.Form)
+	data := formatRoll(r.FormValue("user_id"), mini, silent, result)
+	writeJson(w, r, data)
 }
 
-func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D {
+func writeJson(w http.ResponseWriter, r *http.Request, data D) {
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		log.Printf("ERROR - Failed to mashal %v: %v", data, err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
+}
+
+func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) D {
 	var (
 		color     string
-		fields    []slack.D
+		fields    []D
 		final     int
 		text      string
 		fallback  string
@@ -105,11 +123,11 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D
 		} else if result.Explode {
 			dice += "!"
 		}
-		fields = append(fields, slack.D{
+		fields = append(fields, D{
 			"title": "Dice",
 			"value": dice,
 			"short": true,
-		}, slack.D{
+		}, D{
 			"title": "Rolls",
 			"value": rollText[1 : len(rollText)-1],
 			"short": true,
@@ -121,11 +139,11 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D
 					count++
 				}
 			}
-			fields = append(fields, slack.D{
+			fields = append(fields, D{
 				"title": "Minimum",
 				"value": strconv.Itoa(result.Minimum),
 				"short": true,
-			}, slack.D{
+			}, D{
 				"title": "Over",
 				"value": strconv.Itoa(count),
 				"short": true,
@@ -138,11 +156,11 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D
 					count++
 				}
 			}
-			fields = append(fields, slack.D{
+			fields = append(fields, D{
 				"title": "Maximum",
 				"value": strconv.Itoa(result.Maximum),
 				"short": true,
-			}, slack.D{
+			}, D{
 				"title": "Under",
 				"value": strconv.Itoa(count),
 				"short": true,
@@ -150,11 +168,11 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D
 		}
 		if result.Keep != 0 {
 			removed := fmt.Sprint(result.Removed)
-			fields = append(fields, slack.D{
+			fields = append(fields, D{
 				"title": "Keep",
 				"value": strconv.Itoa(result.Keep),
 				"short": true,
-			}, slack.D{
+			}, D{
 				"title": "Removed",
 				"value": removed[1 : len(removed)-1],
 				"short": true,
@@ -162,15 +180,15 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D
 		}
 	}
 	if mini {
-		fields = []slack.D{}
+		fields = []D{}
 	}
 	response := "in_channel"
 	if silent {
 		response = "ephemeral"
 	}
-	return slack.D{
+	return D{
 		"response_type": response,
-		"attachments": []slack.D{
+		"attachments": []D{
 			{
 				"fallback": fmt.Sprint("<@", id, "> rolled ", fallback),
 				"text":     fmt.Sprint("<@", id, "> rolled ", text),
@@ -181,15 +199,4 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) slack.D
 			},
 		},
 	}
-}
-
-func command(args slack.Args) slack.D {
-	rand.Seed(time.Now().UnixNano())
-	mini := strings.HasPrefix(args.Text, "mini")
-	silent := strings.HasPrefix(args.Text, "silent")
-	result := roll.Parse(args.Text)
-	for _, roll := range result {
-		roll.Roll()
-	}
-	return formatRoll(args.UserID, mini, silent, result)
 }
