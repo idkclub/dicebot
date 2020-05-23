@@ -6,6 +6,7 @@
   </head>
   <body>
     <img src="/static/image.png" srcset="/static/image.png 1x, /static/image-2.png 2x">
+    <div id="status"></div>
     <a href="https://slack.com/oauth/authorize?client_id=SLACK_ID&scope=commands"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
     <p>
     Clicking the button above will add the following command to your team's Slack:
@@ -31,5 +32,14 @@
     <a href="https://github.com/arkie/dicebot" class="small">Github</a>
     <a href="/privacy" class="small">Privacy Policy</a>
     <a href="/contact" class="small">Contact</a>
+    <script>
+      const cookies = document.cookie.split(/;\s+/).map(s=>s.split("=")).reduce(
+        (acc, kv)=> Object.assign(acc, {[kv[0]]:kv[1]}), {})
+      if (cookies.c) {
+        const status = document.getElementById("status");
+        status.innerText = cookies.c === "Okay" ? "Installed Dicebot." : "Error Installing";
+        document.cookie = "c=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      }
+    </script>
   </body>
 </html>
