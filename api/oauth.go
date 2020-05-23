@@ -16,7 +16,7 @@ var (
 		Scopes:       []string{},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://slack.com/oauth/authorize",
-			TokenURL: "https://slack.com/api/oauth.v2.access",
+			TokenURL: "https://slack.com/api/oauth.access",
 		},
 	}
 )
