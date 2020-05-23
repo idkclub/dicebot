@@ -14,6 +14,28 @@ import (
 
 type D map[string]interface{}
 
+func helpGen(markdown bool) string {
+	backtick := ""
+	if markdown {
+		backtick = "`"
+	}
+	return backtick + `/roll [XdY]` + backtick + ` - Roll X Y-sided dice
+
+	Note that the following standard notation dice expression are also supported:
+
+	- ` + backtick + `df` + backtick + ` for fudge dice
+	- ` + backtick + `d%` + backtick + ` for percentile dice
+	- A ` + backtick + `!` + backtick + ` to indicate that the dice "explode", rolling an additional die of the same size when the max value is rolled.
+	- A ` + backtick + `<5` + backtick + ` or ` + backtick + `>5` + backtick + ` (for any number between 2 and the die size - 1) to indicate that you want to count up how many dice rolled below or above the value.
+	- A ` + backtick + `k5` + backtick + ` or ` + backtick + `k-5` + backtick + ` (for any number between -999 and 999) to indicate that only the best K (for positive values) or worst K (for negative values) rolls should be counted in the result.
+	`
+}
+
+var (
+	help         = helpGen(true)
+	helpFallback = helpGen(false)
+)
+
 func Route(w http.ResponseWriter, r *http.Request) {
 	rand.Seed(time.Now().UnixNano())
 	text := r.FormValue("text")
@@ -24,6 +46,19 @@ func Route(w http.ResponseWriter, r *http.Request) {
 		roll.Roll()
 	}
 	log.Printf("INFO - Got command %v", r.Form)
+	if text == "help" {
+		writeJson(w, r, D{
+			"response_type": "ephemeral",
+			"attachments": []D{
+				{
+					"fallback":  helpFallback,
+					"text":      help,
+					"mrkdwn_in": []string{"text"},
+				},
+			},
+		})
+		return
+	}
 	data := formatRoll(r.FormValue("user_id"), mini, silent, result)
 	writeJson(w, r, data)
 }
