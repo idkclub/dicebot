@@ -39,6 +39,7 @@ func Oauth(w http.ResponseWriter, r *http.Request) {
 		log.Printf("ERROR - Failed to exchange token %v: %v", tok, err)
 		http.SetCookie(w, &http.Cookie{
 			Name:  Cookie,
+			Path:  "/",
 			Value: Error,
 		})
 		http.Redirect(w, r, "/", 303)
@@ -47,6 +48,7 @@ func Oauth(w http.ResponseWriter, r *http.Request) {
 	log.Printf("INFO - Got token %+v", tok)
 	http.SetCookie(w, &http.Cookie{
 		Name:  Cookie,
+		Path:  "/",
 		Value: Okay,
 	})
 	http.Redirect(w, r, "/", 303)
