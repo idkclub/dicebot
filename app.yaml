@@ -1,8 +1,0 @@
-runtime: go112
-main: .
-
-handlers:
-- url: /static
-  static_dir: static
-- url: /.*
-  script: auto
