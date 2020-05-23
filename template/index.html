@@ -33,10 +33,11 @@
     <a href="/privacy" class="small">Privacy Policy</a>
     <a href="/contact" class="small">Contact</a>
     <script>
-      const cookies = document.cookie.split(/;\s+/).map(s=>s.split("=")).reduce(
-        (acc, kv)=> Object.assign(acc, {[kv[0]]:kv[1]}), {})
+      var cookies = document.cookie.split(/;\s+/).map(
+        function(s){return s.split("=")}).reduce(
+            function(acc, kv){return Object.assign(acc, {[kv[0]]:kv[1]})}, {});
       if (cookies.c) {
-        const status = document.getElementById("status");
+        var status = document.getElementById("status");
         status.innerText = cookies.c === "Okay" ? "Installed Dicebot." : "Error Installing";
         document.cookie = "c=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
       }
