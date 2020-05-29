@@ -1,6 +1,7 @@
 package api
 
 import (
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"log"
 	"net/http"
@@ -28,6 +29,10 @@ const (
 )
 
 func Oauth(w http.ResponseWriter, r *http.Request) {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		log.Printf("can't initialize zap logger: %v", err)
+	}
 	code := r.FormValue("code")
 	if len(code) == 0 {
 		http.Redirect(w, r, "/", 303)
@@ -36,7 +41,7 @@ func Oauth(w http.ResponseWriter, r *http.Request) {
 	c := r.Context()
 	tok, err := conf.Exchange(c, code)
 	if err != nil || !tok.Valid() {
-		log.Printf("ERROR - Failed to exchange token %v: %v", tok, err)
+		logger.Error("oauth error", zap.Any("token", tok), zap.Error(err))
 		http.SetCookie(w, &http.Cookie{
 			Name:  Cookie,
 			Path:  "/",
@@ -45,7 +50,7 @@ func Oauth(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", 303)
 		return
 	}
-	log.Printf("INFO - Got token %+v", tok)
+	logger.Info("oauth token", zap.Any("token", tok))
 	http.SetCookie(w, &http.Cookie{
 		Name:  Cookie,
 		Path:  "/",
