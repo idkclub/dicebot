@@ -71,3 +71,9 @@ D&D rolls can be written just like they are in text: `1d20 + 4`, `8d6`, etc. To 
 World of Darkness rolls should be written like `5d10!>7`, which will roll 5 exploding d10s, and count how many exceed 7 (are 8 or higher).
 
 "For" values can make a result easier to read, like `1d8+1 for sword, +1d6 for fire` which will print out something like "@dm rolled *5* + *1* for *sword* + *1* for *fire* = *7*". (Note the comma after the first "for" value - it'll parse wrong if you leave that off.)
+
+Running Locally
+---------------
+
+- `git clone https://github.com/arkie/dicebot.git`, followed by `cd dicebot`
+- `vercel` to initially link with a [Vercel](https://vercel.com) account or `vercel dev` to run locally.
