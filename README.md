@@ -11,7 +11,7 @@ DiceBot
 Installing
 ----------
 
-Click `Add to Slack` on [this page](https://dice-b.appspot.com/) to install into your own Slack.
+Click `Add to Slack` on [this page](https://dicebot.now.sh/) to install into your own Slack.
 
 Usage
 -----
