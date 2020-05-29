@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/arkie/dicebot/roll"
+	"go.uber.org/zap"
 	"log"
 	"math/rand"
 	"net/http"
@@ -36,7 +37,12 @@ var (
 	helpFallback = helpGen(false)
 )
 
-func Route(w http.ResponseWriter, r *http.Request) {
+func Roll(w http.ResponseWriter, r *http.Request) {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		log.Printf("can't initialize zap logger: %v", err)
+	}
+	defer logger.Sync()
 	rand.Seed(time.Now().UnixNano())
 	text := r.FormValue("text")
 	mini := strings.HasPrefix(text, "mini")
@@ -45,7 +51,7 @@ func Route(w http.ResponseWriter, r *http.Request) {
 	for _, roll := range result {
 		roll.Roll()
 	}
-	log.Printf("INFO - Got command %v", r.Form)
+	logger.Info("rolling", zap.Any("form", r.Form))
 	if text == "help" {
 		writeJson(w, r, D{
 			"response_type": "ephemeral",
