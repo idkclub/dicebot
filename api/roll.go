@@ -65,20 +65,20 @@ func Roll(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	data := formatRoll(r.FormValue("user_id"), mini, silent, result)
+	data := formatRoll(r.FormValue("user_id"), r.FormValue("thread_ts"), mini, silent, result)
 	writeJson(w, r, data)
 }
 
 func writeJson(w http.ResponseWriter, r *http.Request, data D) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
-		log.Printf("ERROR - Failed to mashal %v: %v", data, err)
+		log.Printf("ERROR - Failed to marshal %v: %v", data, err)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)
 }
 
-func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) D {
+func formatRoll(id string, thread string, mini bool, silent bool, results []*roll.Dice) D {
 	var (
 		color     string
 		fields    []D
@@ -228,6 +228,7 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) D {
 		response = "ephemeral"
 	}
 	return D{
+		"thread_ts": thread,
 		"response_type": response,
 		"attachments": []D{
 			{
