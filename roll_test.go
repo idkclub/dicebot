@@ -1,8 +1,7 @@
-package api
+package main
 
 import (
 	"fmt"
-	"github.com/arkie/dicebot/roll"
 	"testing"
 )
 
@@ -25,7 +24,7 @@ var formatTests = []string{
 
 func TestRollFormat(t *testing.T) {
 	for _, test := range formatTests {
-		rolls := roll.Parse(test)
+		rolls := Parse(test)
 		verify := fmt.Sprint("<@", userID, "> rolled ")
 		sum := 0
 		for i, result := range rolls {
@@ -70,7 +69,7 @@ func TestRollFormat(t *testing.T) {
 }
 
 func TestFor(t *testing.T) {
-	rolls := roll.Parse("d20 for initiative, 2d6 + 5 for attack")
+	rolls := Parse("d20 for initiative, 2d6 + 5 for attack")
 	resp := formatRoll(userID, false, false, rolls)
 	attach := resp["attachments"].([]D)[0]
 	verify := "<@1234> rolled 0 for initiative + 0 + 0 = 0 for attack = 0"

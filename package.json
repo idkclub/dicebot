@@ -1,5 +1,0 @@
-{
-  "scripts": {
-    "build": "rm -rf public && cp -r template public && sed \"s!SLACK_ID!$SLACK_ID!\" ./template/index.html > ./public/index.html"
-  }
-}

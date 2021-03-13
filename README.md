@@ -11,7 +11,7 @@ DiceBot
 Installing
 ----------
 
-Click `Add to Slack` on [this page](https://dicebot.now.sh/) to install into your own Slack.
+Click `Add to Slack` on [this page](https://dicebot.idk.club/) to install into your own Slack.
 
 Usage
 -----
@@ -75,5 +75,5 @@ World of Darkness rolls should be written like `5d10!>7`, which will roll 5 expl
 Running Locally
 ---------------
 
-- `git clone https://github.com/arkie/dicebot.git`, followed by `cd dicebot`
-- `vercel` to initially link with a [Vercel](https://vercel.com) account or `vercel dev` to run locally.
+- `git clone https://github.com/idkclub/dicebot.git`, followed by `cd dicebot`
+- `go run .`

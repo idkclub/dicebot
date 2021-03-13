@@ -1,0 +1,16 @@
+html {color-scheme: dark light;}
+a {color: #0093d3;}
+body {font:16px monospace; text-align:center;}
+img {display:block;}
+div, img, p {margin:10px auto 20px; max-width:400px;}
+.bold {font-weight: bold;}
+.command {text-align: left;}
+.grey {color: #aaa;}
+.right {float:right; font-style:italic;}
+.small {font-size:14px;}
+
+@media (prefers-color-scheme: light){
+  img[alt~="/roll"] {
+    content: url("/assets/preview.light.png");
+  }
+}

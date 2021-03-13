@@ -1,9 +1,8 @@
-package api
+package main
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/arkie/dicebot/roll"
 	"go.uber.org/zap"
 	"log"
 	"math/rand"
@@ -47,7 +46,7 @@ func Roll(w http.ResponseWriter, r *http.Request) {
 	text := r.FormValue("text")
 	mini := strings.HasPrefix(text, "mini")
 	silent := strings.HasPrefix(text, "silent")
-	result := roll.Parse(text)
+	result := Parse(text)
 	for _, roll := range result {
 		roll.Roll()
 	}
@@ -78,7 +77,7 @@ func writeJson(w http.ResponseWriter, r *http.Request, data D) {
 	w.Write(bytes)
 }
 
-func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) D {
+func formatRoll(id string, mini bool, silent bool, results []*Dice) D {
 	var (
 		color     string
 		fields    []D
@@ -92,23 +91,23 @@ func formatRoll(id string, mini bool, silent bool, results []*roll.Dice) D {
 	for i, result := range results {
 		op := result.Operator
 		switch result.Operator {
-		case roll.Add:
+		case Add:
 			final += result.Total
-		case roll.Subtract:
+		case Subtract:
 			final -= result.Total
-		case roll.Multiply:
+		case Multiply:
 			final *= result.Total
 			op = "×"
-		case roll.Divide:
+		case Divide:
 			// Just ignoring divide by zero.
 			if result.Total != 0 {
 				final /= result.Total
 			}
-		case roll.Max:
+		case Max:
 			if result.Total > final {
 				final = result.Total
 			}
-		case roll.Min:
+		case Min:
 			if result.Total < final {
 				final = result.Total
 			}

@@ -1,4 +1,4 @@
-package roll
+package main
 
 import (
 	"testing"
