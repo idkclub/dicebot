@@ -3,9 +3,9 @@ DiceBot
 
 [DiceBot](https://slack.com/apps/A0K7BALJ1-dicebot) is a [Slack](https://slack.com/) app.
 
- - [roll](/roll) -
+ - [roll.go](/roll.go) -
    The dice parsing logic.
- - [slack](/slack) -
+ - [oauth.go](/oauth.go) -
    The Slack specific authentication and parsing.
 
 Installing
